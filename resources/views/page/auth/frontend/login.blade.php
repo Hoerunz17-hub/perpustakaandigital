@@ -156,16 +156,17 @@
         <div class="logo">Perpus</div>
         <div class="subtitle">Digital Library Access</div>
 
-        <form>
+        <form action="{{ route('login.anggota') }}" method="POST">
+            @csrf
             <div class="form-group">
                 <label>Email</label>
-                <input type="email" placeholder="Masukkan email">
+                <input type="email" name="email" placeholder="Masukkan Email">
             </div>
 
             <div class="form-group">
                 <label>Password</label>
                 <div class="input-wrap">
-                    <input id="password" type="password" placeholder="Masukkan password">
+                    <input id="password" name="password" type="password" placeholder="Masukkan password">
                     <iconify-icon onclick="togglePassword('password', this)" class="toggle-icon" icon="mdi:eye-outline"
                         width="20">
                     </iconify-icon>
@@ -195,6 +196,29 @@
             }
         }
     </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    @if (session('success'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: '{{ session('success') }}',
+                confirmButtonColor: '#c59d5f'
+            });
+        </script>
+    @endif
+
+    @if (session('error'))
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal!',
+                text: '{{ session('error') }}',
+                confirmButtonColor: '#c59d5f'
+            });
+        </script>
+    @endif
 </body>
 
 </html>

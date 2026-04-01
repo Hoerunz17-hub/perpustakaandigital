@@ -32,28 +32,43 @@
                                 <tr>
                                     <th class="text-nowrap">No</th>
                                     <th class="text-nowrap">Nama</th>
+                                    <th class="text-nowrap">foto</th>
                                     <th class="text-nowrap">Email</th>
                                     <th class="text-nowrap">Jenis Kelamin</th>
+                                    <th class="text-nowrap">Alamat</th>
                                     <th class="text-nowrap">Tanggal Lahir</th>
 
                                     <th class="text-nowrap">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td class="text-nowrap">1</td>
-                                    <td class="text-nowrap">Foto</td>
-                                    <td class="text-nowrap">17-05026</td>
-                                    <td class="text-nowrap"> tere liye</td>
-                                    <td class="text-nowrap"> tere liye</td>
-                                    <td class="text-center align-middle">
-                                        <a href="#" class="text-primary fs-5">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                    </td>
-                                </tr>
+                                @forelse ($anggota as $index => $anggotas)
+                                    <tr>
+                                        <td class="text-nowrap">{{ $anggotas->id_anggota }}</td>
+                                        <td class="text-nowrap">{{ $anggotas->nama_anggota }}</td>
+                                        <td class="text-nowrap">
+                                            @if ($anggotas->image)
+                                                <img src="{{ asset('storage/' . $anggotas->image) }}" width="50"
+                                                    height="50" style="object-fit: cover; border-radius: 50%;">
+                                            @else
+                                                <span>-</span>
+                                            @endif
+                                        </td>
+                                        <td class="text-nowrap">{{ $anggotas->email }}</td>
+                                        <td class="text-nowrap">{{ $anggotas->jenis_kelamin }}</td>
+                                        <td class="text-nowrap">{{ $anggotas->alamat }}</td>
+                                        <td class="text-nowrap">
+                                            {{ \Carbon\Carbon::parse($anggotas->tanggal_lahir)->format('d-m-Y') }}</td>
+                                        <td class="text-center align-middle">
+                                            <a href="/anggota/show/{{ $anggotas->id_anggota }}" class="text-primary fs-5">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
 
 
+                                @empty
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -78,4 +93,16 @@
             padding-bottom: 12px !important;
         }
     </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof $ !== 'undefined') {
+                $('#table1').DataTable({
+                    destroy: true,
+                    language: {
+                        emptyTable: "Anggota masih kosongg"
+                    }
+                });
+            }
+        });
+    </script>
 @endsection

@@ -56,6 +56,7 @@ Route::middleware(['auth', 'role:petugas'])->group(function () {
 Route::middleware(['auth', 'role:kepala,petugas'])->group(function () {
 
     Route::get('/anggota', [AnggotaBackendController::class, 'index']);
+    Route::get('/anggota/show/{id}', [AnggotaBackendController::class, 'show']);
 });
 
 Route::middleware(['auth', 'role:kepala'])->group(function () {
@@ -84,10 +85,16 @@ Route::post('/logout', [AuthControllerBackendController::class, 'logout'])->name
 // 🌐 FRONTEND
 // ==============================
 //
+
+
 Route::get('/', [HomeFrontendController::class, 'index']);
 Route::get('/bukusaya', [BukusayaFrontendController::class, 'index']);
 Route::get('/buku/show/{id}', [HomeFrontendController::class, 'show']);
 Route::get('/anggota/peminjaman', [PeminjamanFrontendController::class, 'index']);
 
+Route::post('/loginuser', [AuthControllerFrontendController::class, 'prosesLogin'])->name('login.anggota');
 Route::get('/loginuser', [AuthControllerFrontendController::class, 'login']);
+Route::post('/logoutuser', [AuthControllerFrontendController::class, 'logout'])->name('logout.anggota');
+
+Route::get('/registrasiuser', [AuthControllerFrontendController::class, 'registrasi']);
 Route::post('/registrasiuser', [AuthControllerFrontendController::class, 'store'])->name('register.store');
