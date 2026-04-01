@@ -1,5 +1,8 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
+// Backend Controllers
 use App\Http\Controllers\Backend\AnggotaBackendController;
 use App\Http\Controllers\Backend\AuthControllerBackendController;
 use App\Http\Controllers\Backend\BukuBackendController;
@@ -8,20 +11,20 @@ use App\Http\Controllers\Backend\DashboardPetugasBackendController;
 use App\Http\Controllers\Backend\laporanBackendController;
 use App\Http\Controllers\Backend\PeminjamanBackendController;
 use App\Http\Controllers\Backend\PetugasBackendController;
+
+// Frontend Controllers
 use App\Http\Controllers\Frontend\AuthControllerFrontendController;
 use App\Http\Controllers\Frontend\BukusayaFrontendController;
 use App\Http\Controllers\Frontend\HomeFrontendController;
 use App\Http\Controllers\Frontend\PeminjamanFrontendController;
-use Illuminate\Support\Facades\Route;
 
 //
 // ==============================
 // 🔐 AUTH
 // ==============================
 //
-Route::get('/login', [AuthControllerBackendController::class,'login'])->name('login');
+Route::get('/login', [AuthControllerBackendController::class, 'login'])->name('login');
 Route::post('/login', [AuthControllerBackendController::class, 'prosesLogin'])->name('login.proses');
-
 
 //
 // ==============================
@@ -30,46 +33,50 @@ Route::post('/login', [AuthControllerBackendController::class, 'prosesLogin'])->
 //
 Route::middleware(['auth', 'role:petugas'])->group(function () {
 
-    Route::get('/adminpetugas', [DashboardPetugasBackendController::class,'index']);
+    Route::get('/adminpetugas', [DashboardPetugasBackendController::class, 'index']);
 
     // Buku
-    Route::get('/buku', [BukuBackendController::class,'index']);
-    Route::get('/buku/create', [BukuBackendController::class,'create']);
-    Route::post('/buku/store', [BukuBackendController::class,'store']);
-    Route::get('/buku/edit/{id}', [BukuBackendController::class,'edit']);
-    Route::post('/buku/update/{id}', [BukuBackendController::class,'update']);
-    Route::get('/buku/delete/{id}', [BukuBackendController::class,'destroy']);
-    Route::post('/buku/update-status/{id}', [BukuBackendController::class, 'updateStatus']);
-    Route::get('/buku/show/{id}', [BukuBackendController::class,'show']);
+    Route::get('/buku', [BukuBackendController::class, 'index']);
+    Route::get('/buku/create', [BukuBackendController::class, 'create']);
+    Route::post('/buku/store', [BukuBackendController::class, 'store']);
+    Route::get('/buku/edit/{id}', [BukuBackendController::class, 'edit']);
+    Route::post('/buku/update/{id}', [BukuBackendController::class, 'update']);
+    Route::get('/buku/delete/{id}', [BukuBackendController::class, 'destroy']);
+    Route::get('/buku/show/{id}', [BukuBackendController::class, 'show']);
 
-    // Petugas
-    Route::get('/petugas', [PetugasBackendController::class,'index']);
-    Route::get('/petugas/create', [PetugasBackendController::class,'create']);
-    Route::post('/petugas/store', [PetugasBackendController::class,'store']);
-    Route::get('/petugas/edit/{id}', [PetugasBackendController::class,'edit']);
-    Route::post('/petugas/update/{id}', [PetugasBackendController::class,'update']);
-    Route::get('/petugas/delete/{id}', [PetugasBackendController::class,'destroy']);
-    Route::post('/petugas/update-status/{id}', [PetugasBackendController::class, 'updateStatus']);
-    Route::get('/petugas/show/{id}', [PetugasBackendController::class,'show']);
-
-    // Lainnya
-    Route::get('/peminjaman', [PeminjamanBackendController::class,'index']);
+    // Peminjaman
+    Route::get('/petugas/peminjaman', [PeminjamanBackendController::class, 'index']);
 });
-
-
 //
 // ==============================
 // 🔒 BACKEND - KEPALA PERPUS
 // ==============================
 //
-Route::middleware(['auth', 'role:kepala'])->group(function () {
 
-    Route::get('/kepalaperpus', [DashboardKepalaPerpusBackendController::class,'index']);
+Route::middleware(['auth', 'role:kepala,petugas'])->group(function () {
 
-    Route::get('/anggota', [AnggotaBackendController::class,'index']);
-    Route::get('/laporan', [laporanBackendController::class,'index']);
+    Route::get('/anggota', [AnggotaBackendController::class, 'index']);
 });
 
+Route::middleware(['auth', 'role:kepala'])->group(function () {
+
+    Route::get('/kepalaperpus', [DashboardKepalaPerpusBackendController::class, 'index']);
+
+    Route::get('/petugas', [PetugasBackendController::class, 'index']);
+    Route::get('/petugas/create', [PetugasBackendController::class, 'create']);
+    Route::post('/petugas/store', [PetugasBackendController::class, 'store']);
+    Route::get('/petugas/edit/{id}', [PetugasBackendController::class, 'edit']);
+    Route::post('/petugas/update/{id}', [PetugasBackendController::class, 'update']);
+    Route::get('/petugas/delete/{id}', [PetugasBackendController::class, 'destroy']);
+
+    Route::get('/laporan', [laporanBackendController::class, 'index']);
+});
+
+//
+// ==============================
+// 🔓 LOGOUT
+// ==============================
+//
 Route::post('/logout', [AuthControllerBackendController::class, 'logout'])->name('logout');
 
 //
@@ -77,13 +84,10 @@ Route::post('/logout', [AuthControllerBackendController::class, 'logout'])->name
 // 🌐 FRONTEND
 // ==============================
 //
-Route::get('/', [HomeFrontendController::class,'index']);
-Route::get('/bukusaya', [BukusayaFrontendController::class,'index']);
+Route::get('/', [HomeFrontendController::class, 'index']);
+Route::get('/bukusaya', [BukusayaFrontendController::class, 'index']);
 Route::get('/buku/show/{id}', [HomeFrontendController::class, 'show']);
-Route::get('/peminjaman', [PeminjamanFrontendController::class, 'index']);
+Route::get('/anggota/peminjaman', [PeminjamanFrontendController::class, 'index']);
 
-
-
-
-Route::get('/loginuser', [AuthControllerFrontendController::class,'login']);
-Route::get('/registrasiuser', [AuthControllerFrontendController::class,'registrasi']);
+Route::get('/loginuser', [AuthControllerFrontendController::class, 'login']);
+Route::post('/registrasiuser', [AuthControllerFrontendController::class, 'store'])->name('register.store');

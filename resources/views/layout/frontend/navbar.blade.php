@@ -15,7 +15,7 @@
                     <div class="main-menu stellarnav">
                         <ul class="menu-list">
                             <li class="menu-item active"><a href="/">Home</a></li>
-                            <li class="menu-item"><a href="/peminjaman" class="nav-link">Peminjaman</a></li>
+                            <li class="menu-item"><a href="/anggota/peminjaman" class="nav-link">Peminjaman</a></li>
                             <li class="menu-item"><a href="#featured-books" class="nav-link">Pengembalian</a></li>
                             <li class="menu-item"><a href="#special-offer" class="nav-link">Offer</a></li>
                             <li class="menu-item"><a href="/bukusaya" class="nav-link">Buku saya</a></li>

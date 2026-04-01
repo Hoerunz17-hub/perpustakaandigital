@@ -13,11 +13,12 @@ return new class extends Migration
     {
        Schema::create('anggota', function (Blueprint $table) {
     $table->id('id_anggota');
-    $table->string('nama_anggota', 100);
-    $table->string('jenis_kelamin', 100);
+    $table->string('nama_anggota');
+    $table->string('jenis_kelamin');
     $table->date('tanggal_lahir');
     $table->text('alamat');
     $table->string('email')->unique();
+    $table->string('image')->nullable();
     $table->integer('max_pinjam')->default(3);
 
     $table->foreignId('id_user')
