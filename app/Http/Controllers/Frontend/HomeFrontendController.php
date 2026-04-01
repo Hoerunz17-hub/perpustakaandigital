@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class HomeFrontendController extends Controller
 {
      public function index(){
-        $buku = Buku::all(); // ambil semua buku
+         $buku = Buku::where('is_active', 1)->get(); // hanya yang aktif
         return view('page.frontend.home.index', compact('buku'));
     }
     public function show($id)
