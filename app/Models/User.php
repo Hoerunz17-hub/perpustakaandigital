@@ -49,4 +49,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(Petugas::class, 'email', 'email');
     }
+
+    public function anggota()
+{
+    return $this->hasOne(Anggota::class, 'id_user', 'id_user');
+}
 }

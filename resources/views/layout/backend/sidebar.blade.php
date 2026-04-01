@@ -42,63 +42,70 @@
         </div>
         <div class="sidebar-menu">
             <ul class="menu">
+
                 <li class="sidebar-title">Menu</li>
 
+                {{-- DASHBOARD PETUGAS --}}
                 @if (auth()->user()->role == 'petugas')
                     <li class="sidebar-item {{ request()->is('adminpetugas*') ? 'active' : '' }}">
-                        <a href="/adminpetugas" class='sidebar-link'>
+                        <a href="/adminpetugas" class="sidebar-link">
                             <i class="bi bi-grid-fill"></i>
                             <span>Dashboard Petugas</span>
                         </a>
                     </li>
 
                     <li class="sidebar-item {{ request()->is('buku*') ? 'active' : '' }}">
-                        <a href="/buku" class='sidebar-link'>
+                        <a href="/buku" class="sidebar-link">
                             <i class="fas fa-book"></i>
                             <span>Buku</span>
                         </a>
                     </li>
 
-                    <li class="sidebar-item {{ request()->is('anggota*') ? 'active' : '' }}">
-                        <a href="/anggota" class='sidebar-link'>
-                            <i class="fas fa-users"></i>
-                            <span>Anggota</span>
-                        </a>
-                    </li>
-
-                    <li class="sidebar-item {{ request()->is('peminjaman*') ? 'active' : '' }}">
-                        <a href="/peminjaman" class='sidebar-link'>
+                    <li class="sidebar-item {{ request()->is('petugas/peminjaman*') ? 'active' : '' }}">
+                        <a href="/petugas/peminjaman" class="sidebar-link">
                             <i class="fas fa-book-reader"></i>
                             <span>Peminjaman</span>
                         </a>
                     </li>
                 @endif
+
+                {{-- DASHBOARD KEPALA --}}
                 @if (auth()->user()->role == 'kepala')
                     <li class="sidebar-item {{ request()->is('kepalaperpus*') ? 'active' : '' }}">
-                        <a href="/kepalaperpus" class='sidebar-link'>
+                        <a href="/kepalaperpus" class="sidebar-link">
                             <i class="bi bi-grid-fill"></i>
                             <span>Dashboard Kepala</span>
                         </a>
                     </li>
 
                     <li class="sidebar-item {{ request()->is('petugas*') ? 'active' : '' }}">
-                        <a href="/petugas" class='sidebar-link'>
+                        <a href="/petugas" class="sidebar-link">
                             <i class="fas fa-user"></i>
                             <span>Petugas</span>
                         </a>
                     </li>
 
                     <li class="sidebar-item {{ request()->is('laporan*') ? 'active' : '' }}">
-                        <a href="/laporan" class='sidebar-link'>
+                        <a href="/laporan" class="sidebar-link">
                             <i class="fas fa-file-signature"></i>
                             <span>Laporan</span>
                         </a>
                     </li>
                 @endif
 
-
+                {{-- ✅ MENU SHARED (ANGGOTA) --}}
+                @if (in_array(auth()->user()->role, ['kepala', 'petugas']))
+                    <li class="sidebar-item {{ request()->is('anggota*') ? 'active' : '' }}">
+                        <a href="/anggota" class="sidebar-link">
+                            <i class="fas fa-users"></i>
+                            <span>Anggota</span>
+                        </a>
+                    </li>
+                @endif
 
             </ul>
         </div>
+
     </div>
+
 </div>

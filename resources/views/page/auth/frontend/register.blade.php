@@ -31,7 +31,7 @@
 
         .wrapper {
             width: 100%;
-            max-width: 420px;
+            max-width: 650px;
             /* biar pas di tengah */
         }
 
@@ -141,6 +141,32 @@
         .toggle-icon:hover {
             color: #c59d5f;
         }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        /* supaya textarea, file, dll bisa full width */
+        .full {
+            grid-column: span 2;
+        }
+
+        /* responsive: balik jadi 1 kolom di HP */
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .full {
+                grid-column: span 1;
+            }
+        }
+
+        body {
+            padding: 20px;
+        }
     </style>
 </head>
 
@@ -153,30 +179,55 @@
             <div class="logo">Perpus</div>
             <div class="subtitle">Buat akun baru</div>
 
-            <form>
-                <div class="form-group">
-                    <label>Nama</label>
-                    <input type="text" placeholder="Masukkan nama lengkap">
-                </div>
+           <form action="{{ route('register.store') }}" method="POST" enctype="multipart/form-data">
+    @csrf
+                <div class="form-grid">
 
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" placeholder="Masukkan email">
-                </div>
-
-                <div class="form-group">
-                    <label>Password</label>
-                    <div class="input-wrap">
-                        <input id="password" type="password" placeholder="Masukkan password">
-                        <iconify-icon onclick="togglePassword('password', this)" class="toggle-icon"
-                            icon="mdi:eye-outline" width="20">
-                        </iconify-icon>
+                    <div class="form-group">
+                        <label>Nama</label>
+                        <input type="text"  name="nama" placeholder="Masukkan nama lengkap">
                     </div>
-                </div>
 
-                <div class="form-group">
-                    <label>Konfirmasi Password</label>
-                    <input type="password" placeholder="Ulangi password">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email"  name="email" placeholder="Masukkan email">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Jenis Kelamin</label>
+                        <select  name="jenis_kelamin"
+                            style="width:100%; padding:10px 12px; border:1px solid #e5e5e5; border-radius:6px; background:#fafafa;">
+                            <option value="">Pilih jenis kelamin</option>
+                            <option value="laki-laki">Laki-laki</option>
+                            <option value="perempuan">Perempuan</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tanggal Lahir</label>
+                        <input type="date"  name="tanggal_lahir">
+                    </div>
+
+                    <div class="form-group full">
+                        <label>Alamat</label>
+                        <textarea rows="3"  name="alamat" placeholder="Masukkan alamat lengkap"
+                            style="width:100%; padding:10px 12px; border:1px solid #e5e5e5; border-radius:6px; background:#fafafa; outline:none;"></textarea>
+                    </div>
+
+                    <div class="form-group full">
+                        <label>Foto Profil</label>
+                        <input type="file" accept="image/*"  name="foto" style="background:#fafafa;">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Password</label>
+                        <div class="input-wrap">
+                            <input id="password"  name="password" type="password" placeholder="Masukkan password">
+                            <iconify-icon onclick="togglePassword('password', this)" class="toggle-icon"
+                                icon="mdi:eye-outline" width="20"></iconify-icon>
+                        </div>
+                    </div>
+
                 </div>
 
                 <button class="btn">Daftar</button>

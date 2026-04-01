@@ -98,26 +98,7 @@
         </script>
     @endif
 
-    @if (session('success'))
-        <script>
-            Swal.fire({
-                toast: true,
-                position: 'top-end',
-                icon: 'success',
-                title: "{{ session('success') }}",
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true,
-
-                showClass: {
-                    popup: 'animate__animated animate__fadeInDown animate__faster'
-                },
-                hideClass: {
-                    popup: 'animate__animated animate__fadeOutUp animate__faster'
-                }
-            });
-        </script>
-    @endif
+   
 </body>
 
 </html>

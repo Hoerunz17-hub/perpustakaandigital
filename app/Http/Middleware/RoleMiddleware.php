@@ -14,13 +14,13 @@ class RoleMiddleware
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
- public function handle($request, Closure $next, $role)
+public function handle($request, Closure $next, ...$roles)
 {
     if (!Auth::check()) {
         return redirect('/login');
     }
 
-    if (Auth::user()->role !== $role) {
+    if (!in_array(Auth::user()->role, $roles)) {
         abort(403);
     }
 
