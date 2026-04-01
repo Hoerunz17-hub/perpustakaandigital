@@ -65,7 +65,7 @@
                                 📚 Pinjam Buku
                             </a>
 
-                            <a href="{{ url()->previous() }}" class="btn-kembali">
+                            <a href="" class="btn-kembali">
                                 ← Kembali
                             </a>
                         </div>
@@ -208,4 +208,16 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function confirmLogin() {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Harus Login!',
+                text: 'Silahkan login atau daftar dulu untuk meminjam buku',
+                confirmButtonColor: '#c59d5f'
+            });
+            return false;
+        }
+    </script>
 @endsection

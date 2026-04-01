@@ -14,11 +14,27 @@
                 <nav id="navbar">
                     <div class="main-menu stellarnav">
                         <ul class="menu-list">
-                            <li class="menu-item active"><a href="/">Home</a></li>
-                            <li class="menu-item"><a href="/anggota/peminjaman" class="nav-link">Peminjaman</a></li>
-                            <li class="menu-item"><a href="#featured-books" class="nav-link">Pengembalian</a></li>
-                            <li class="menu-item"><a href="#special-offer" class="nav-link">Offer</a></li>
-                            <li class="menu-item"><a href="/bukusaya" class="nav-link">Buku saya</a></li>
+
+                            <li
+                                class="menu-item {{ request()->is('/') || request()->is('buku/show/*') ? 'active' : '' }}">
+                                <a href="/">Home</a>
+                            </li>
+
+                            <li class="menu-item {{ request()->is('anggota/peminjaman') ? 'active' : '' }}">
+                                <a href="/anggota/peminjaman">Peminjaman</a>
+                            </li>
+
+                            <li class="menu-item">
+                                <a href="#">Pengembalian</a>
+                            </li>
+
+                            <li class="menu-item">
+                                <a href="#">Offer</a>
+                            </li>
+
+                            <li class="menu-item {{ request()->is('bukusaya') ? 'active' : '' }}">
+                                <a href="/bukusaya">Buku Saya</a>
+                            </li>
 
                         </ul>
 

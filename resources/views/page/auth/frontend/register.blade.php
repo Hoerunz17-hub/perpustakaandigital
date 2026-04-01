@@ -179,23 +179,26 @@
             <div class="logo">Perpus</div>
             <div class="subtitle">Buat akun baru</div>
 
-           <form action="{{ route('register.store') }}" method="POST" enctype="multipart/form-data">
-    @csrf
+
+
+
+            <form action="{{ route('register.store') }}" method="POST" enctype="multipart/form-data">
+                @csrf
                 <div class="form-grid">
 
                     <div class="form-group">
                         <label>Nama</label>
-                        <input type="text"  name="nama" placeholder="Masukkan nama lengkap">
+                        <input type="text" name="nama" placeholder="Masukkan nama lengkap">
                     </div>
 
                     <div class="form-group">
                         <label>Email</label>
-                        <input type="email"  name="email" placeholder="Masukkan email">
+                        <input type="email" name="email" placeholder="Masukkan email">
                     </div>
 
                     <div class="form-group">
                         <label>Jenis Kelamin</label>
-                        <select  name="jenis_kelamin"
+                        <select name="jenis_kelamin"
                             style="width:100%; padding:10px 12px; border:1px solid #e5e5e5; border-radius:6px; background:#fafafa;">
                             <option value="">Pilih jenis kelamin</option>
                             <option value="laki-laki">Laki-laki</option>
@@ -205,27 +208,32 @@
 
                     <div class="form-group">
                         <label>Tanggal Lahir</label>
-                        <input type="date"  name="tanggal_lahir">
+                        <input type="date" name="tanggal_lahir">
                     </div>
 
                     <div class="form-group full">
                         <label>Alamat</label>
-                        <textarea rows="3"  name="alamat" placeholder="Masukkan alamat lengkap"
+                        <textarea rows="3" name="alamat" placeholder="Masukkan alamat lengkap"
                             style="width:100%; padding:10px 12px; border:1px solid #e5e5e5; border-radius:6px; background:#fafafa; outline:none;"></textarea>
                     </div>
 
                     <div class="form-group full">
                         <label>Foto Profil</label>
-                        <input type="file" accept="image/*"  name="foto" style="background:#fafafa;">
+                        <input type="file" accept="image/*" name="foto" style="background:#fafafa;">
                     </div>
 
                     <div class="form-group">
                         <label>Password</label>
                         <div class="input-wrap">
-                            <input id="password"  name="password" type="password" placeholder="Masukkan password">
+                            <input id="password" name="password" type="password" placeholder="Masukkan password">
                             <iconify-icon onclick="togglePassword('password', this)" class="toggle-icon"
                                 icon="mdi:eye-outline" width="20"></iconify-icon>
                         </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Konfirmasi Password</label>
+                        <input type="password" name="password_confirmation" placeholder="Ulangi password">
                     </div>
 
                 </div>
@@ -239,6 +247,9 @@
         </div>
 
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
         function togglePassword(id, el) {
             const input = document.getElementById(id);
@@ -252,6 +263,17 @@
             }
         }
     </script>
+
+    @if ($errors->any())
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                html: `{!! implode('<br>', $errors->all()) !!}`,
+                confirmButtonColor: '#c59d5f'
+            });
+        </script>
+    @endif
 
 </body>
 

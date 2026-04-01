@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Anggota;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class AuthControllerFrontendController extends Controller
@@ -13,11 +14,45 @@ class AuthControllerFrontendController extends Controller
     public function login(){
         return view('page.auth.frontend.login');
     }
+public function prosesLogin(Request $request)
+{
+    // validasi
+   $request->validate([
+    'email' => 'required|email',
+    'password' => 'required'
+]);
+
+    // login pakai username
+   $credentials = [
+        'email' => $request->email,
+        'password' => $request->password
+    ];
+
+    if (Auth::attempt($credentials)) {
+
+        // cek role anggota
+        if (Auth::user()->role == 'anggota') {
+            return redirect('/')->with('success', 'Login berhasil');
+        } else {
+            Auth::logout();
+            return back()->with('error', 'Bukan akun anggota!');
+        }
+    }
+
+    return back()->with('error', 'email atau password salah');
+}
+
+public function logout()
+{
+    Auth::logout();
+    return redirect('/')->with('success', 'Berhasil logout');
+}
      public function registrasi(){
         return view('page.auth.frontend.register');
     }
      public function store(Request $request)
     {
+
         // VALIDASI
         $request->validate([
             'nama' => 'required',
@@ -25,17 +60,17 @@ class AuthControllerFrontendController extends Controller
             'jenis_kelamin' => 'required',
             'tanggal_lahir' => 'required|date',
             'alamat' => 'required',
-            'password' => 'required|min:6|confirmed',
-            'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'password' => 'required|min:3|confirmed',
+            'foto' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
         // SIMPAN USER
-        $user = User::create([
-            'name' => $request->nama,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => 'anggota'
-        ]);
+       $user = User::create([
+    'username' => $request->nama,
+    'email' => $request->email,
+    'password' => Hash::make($request->password),
+    'role' => 'anggota'
+]);
 
         // UPLOAD IMAGE
         $imageName = null;
