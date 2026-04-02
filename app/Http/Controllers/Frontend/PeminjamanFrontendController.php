@@ -8,8 +8,13 @@ use Illuminate\Http\Request;
 
 class PeminjamanFrontendController extends Controller
 {
-    public function index(){
-          $buku = Buku::where('is_active', 1)->get(); // hanya yang aktif
-        return view('page.frontend.peminjaman.index', compact('buku'));
-    }
+    public function index(Request $request)
+{
+    $buku = Buku::where('is_active', 1)->get();
+
+    // ambil id buku dari query string (?id_buku=...)
+    $selectedBuku = $request->id_buku;
+
+    return view('page.frontend.peminjaman.index', compact('buku', 'selectedBuku'));
+}
 }

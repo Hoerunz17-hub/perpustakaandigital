@@ -61,9 +61,15 @@
 
                         <!-- Button -->
                         <div class="book-action mt-4">
-                            <a href="#" class="btn-pinjam">
-                                📚 Pinjam Buku
-                            </a>
+                            @auth
+                                <a href="/anggota/peminjaman?id_buku={{ $buku->id_buku }}" class="btn-pinjam">
+                                    📚 Pinjam Buku
+                                </a>
+                            @else
+                                <a href="#" onclick="return confirmLogin()" class="btn-pinjam">
+                                    📚 Pinjam Buku
+                                </a>
+                            @endauth
 
                             <a href="" class="btn-kembali">
                                 ← Kembali
@@ -215,7 +221,12 @@
                 icon: 'warning',
                 title: 'Harus Login!',
                 text: 'Silahkan login atau daftar dulu untuk meminjam buku',
+                confirmButtonText: 'Login Sekarang',
                 confirmButtonColor: '#c59d5f'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "/loginuser";
+                }
             });
             return false;
         }

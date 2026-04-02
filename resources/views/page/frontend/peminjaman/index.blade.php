@@ -11,7 +11,7 @@
 
                         <h3 class="mb-4 text-center">Form Peminjaman Buku</h3>
 
-                        <form action="" method="POST">
+                        <form action="" method="POST" @guest onsubmit="confirmLogin(); return false;" @endguest>
 
 
                             <!-- Nama -->
@@ -29,18 +29,35 @@
                             <!-- PILIH BUKU (DROPDOWN) -->
                             <div class="mb-3">
                                 <label class="form-label">Pilih Buku</label>
-                                <select name="id_buku" class="form-control" required>
-                                    <option value="">-- Pilih Buku --</option>
-                                    @if (isset($buku) && count($buku) > 0)
+
+                                @if (isset($selectedBuku))
+                                    {{-- MODE DARI DETAIL (AUTO SELECT, TANPA DROPDOWN) --}}
+
+                                    <input type="hidden" name="id_buku" value="{{ $selectedBuku }}">
+
+                                    @php
+                                        $selectedBook = $buku->where('id_buku', $selectedBuku)->first();
+                                    @endphp
+
+                                    <input type="text" class="form-control"
+                                        value="{{ $selectedBook ? $selectedBook->judul_buku : 'Buku tidak ditemukan' }}"
+                                        readonly>
+                                    <small class="text-muted">Buku sudah dipilih dari halaman sebelumnya</small>
+                                @else
+                                    {{-- MODE MANUAL (DROP DOWN) --}}
+                                    <select name="id_buku" class="form-control" required
+                                        @guest onclick="confirmLogin()" disabled @endguest>
+
+                                        <option value="">-- Pilih Buku --</option>
+
                                         @foreach ($buku as $item)
                                             <option value="{{ $item->id_buku }}">
-                                                {{ $item->judul_buku }} (Stock: {{ $item->stock }})
+                                                {{ $item->judul_buku }}
                                             </option>
                                         @endforeach
-                                    @else
-                                        <option value="">Data buku tidak tersedia</option>
-                                    @endif
-                                </select>
+
+                                    </select>
+                                @endif
                             </div>
 
                             <!-- Tanggal Pinjam -->
@@ -59,7 +76,8 @@
 
                             <!-- Button -->
                             <div class="d-flex gap-2">
-                                <button type="submit" class="btn-pinjam">
+                                <button type="submit" class="btn-pinjam"
+                                    @guest onclick="confirmLogin(); return false;" @endguest>
                                     Pinjam
                                 </button>
 
@@ -157,4 +175,21 @@
             background: #5c636a;
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        function confirmLogin() {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Harus Login!',
+                text: 'Silahkan login atau daftar dulu untuk meminjam buku',
+                confirmButtonText: 'Login Sekarang',
+                confirmButtonColor: '#c59d5f'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "/loginuser";
+                }
+            });
+        }
+    </script>
 @endsection
