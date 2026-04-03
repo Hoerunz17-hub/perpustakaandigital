@@ -17,6 +17,7 @@ use App\Http\Controllers\Frontend\AuthControllerFrontendController;
 use App\Http\Controllers\Frontend\BukusayaFrontendController;
 use App\Http\Controllers\Frontend\HomeFrontendController;
 use App\Http\Controllers\Frontend\PeminjamanFrontendController;
+use App\Http\Controllers\Frontend\PengembalianFrontendController;
 
 //
 // ==============================
@@ -46,6 +47,11 @@ Route::middleware(['auth', 'role:petugas'])->group(function () {
     Route::post('/buku/update-status/{id}', [BukuBackendController::class, 'updateStatus']);
     // Peminjaman
     Route::get('/petugas/peminjaman', [PeminjamanBackendController::class, 'index']);
+   Route::get('/peminjaman/acc/{id}', [PeminjamanBackendController::class, 'acc'])
+    ->name('peminjaman.acc');
+
+Route::get('/peminjaman/tolak/{id}', [PeminjamanBackendController::class, 'tolak'])
+    ->name('peminjaman.tolak');
 });
 //
 // ==============================
@@ -91,6 +97,9 @@ Route::get('/', [HomeFrontendController::class, 'index']);
 Route::get('/bukusaya', [BukusayaFrontendController::class, 'index']);
 Route::get('/buku/show/{id}', [HomeFrontendController::class, 'show']);
 Route::get('/anggota/peminjaman', [PeminjamanFrontendController::class, 'index']);
+Route::post('/anggota/peminjaman/store', [PeminjamanFrontendController::class, 'store']);
+Route::get('/anggota/pengembalian', [PengembalianFrontendController::class, 'index']);
+Route::post('/anggota/pengembalian/store', [PengembalianFrontendController::class, 'store']);
 
 Route::post('/loginuser', [AuthControllerFrontendController::class, 'prosesLogin'])->name('login.anggota');
 Route::get('/loginuser', [AuthControllerFrontendController::class, 'login']);

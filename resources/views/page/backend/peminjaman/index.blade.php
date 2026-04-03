@@ -34,48 +34,111 @@
                                     <th class="text-nowrap">Nama</th>
                                     <th class="text-nowrap">Buku Yang Dipinjam</th>
                                     <th class="text-nowrap">Tanggal Pinjam</th>
+                                    <th class="text-nowrap">Wajib Kembali</th>
                                     <th class="text-nowrap">Tanggal Kembali</th>
+                                    <th class="text-nowrap">Denda</th>
                                     <th class="text-nowrap">Status</th>
                                     <th class="text-nowrap">Action</th>
                                 </tr>
+
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td class="text-nowrap">1</td>
-                                    <td class="text-nowrap">Embut</td>
-                                    <td class="text-nowrap">Kancil</td>
-                                    <td class="text-nowrap">10-19</td>
-                                    <td class="text-nowrap">10-19</td>
-                                    <td class="text-nowrap">
-                                        <span class="badge bg-light-success">Kembali</span>
-                                    </td>
-                                    <td class="text-center align-middle action-column">
-                                        <div class="dropdown dropstart">
-                                            <button class="btn border-0 bg-transparent p-0" type="button"
-                                                data-bs-toggle="dropdown">
-                                                <i class="bi bi-three-dots-vertical fs-5"></i>
-                                            </button>
+                                @forelse ($data as $pinjams)
+                                    <tr>
+                                        <td class="text-nowrap">{{ $pinjams->id_peminjaman }}</td>
+                                        <td class="text-nowrap">{{ $pinjams->anggota->nama_anggota ?? '-' }}</td>
+                                        <td class="text-nowrap">{{ $pinjams->buku->judul_buku ?? '-' }}</td>
+                                        <td class="text-nowrap">
+                                            {{ \Carbon\Carbon::parse($pinjams->tanggal_pinjam)->translatedFormat('d F Y') }}
+                                        </td>
+                                        <td class="text-nowrap">
+                                            {{ \Carbon\Carbon::parse($pinjams->wajib_kembali)->translatedFormat('d F Y') }}
+                                        </td>
+                                        <td>
+                                            {{ $pinjams->pengembalian->tanggal_kembali
+                                                ? \Carbon\Carbon::parse($pinjams->pengembalian->tanggal_kembali)->translatedFormat('d F Y')
+                                                : '-' }}
+                                        </td>
 
-                                            <ul class="dropdown-menu shadow-sm">
-                                                <li>
-                                                    <a class="dropdown-item d-flex align-items-center gap-2" href="#">
-                                                        <i class="fas fa-eye"></i>
-                                                        <span>Detail</span>
+                                        <td>
+                                            {{ $pinjams->pengembalian->denda ? 'Rp ' . number_format($pinjams->pengembalian->denda, 0, ',', '.') : '-' }}
+                                        </td>
+                                        <td class="text-nowrap">
+                                            @if ($pinjams->status == 'menunggu')
+                                                <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
+                                                    data-bs-target="#modalKonfirmasi{{ $pinjams->id_peminjaman }}">
+                                                    Konfirmasi
+                                                </button>
+                                            @elseif ($pinjams->status == 'dipinjam')
+                                                <span class="badge bg-primary">Dipinjam</span>
+                                            @elseif ($pinjams->status == 'ditolak')
+                                                <span class="badge bg-danger">Ditolak</span>
+                                            @elseif ($pinjams->status == 'dikembalikan')
+                                                <span class="badge bg-success">Dikembalikan</span>
+                                            @endif
+                                        </td>
+                                        <td class="text-center align-middle action-column">
+                                            <div class="dropdown dropstart">
+                                                <button class="btn border-0 bg-transparent p-0" type="button"
+                                                    data-bs-toggle="dropdown">
+                                                    <i class="bi bi-three-dots-vertical fs-5"></i>
+                                                </button>
+
+                                                <ul class="dropdown-menu shadow-sm">
+                                                    <li>
+                                                        <a class="dropdown-item d-flex align-items-center gap-2"
+                                                            href="#">
+                                                            <i class="fas fa-eye"></i>
+                                                            <span>Detail</span>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="dropdown-item d-flex align-items-center gap-2 text-danger"
+                                                            href="#">
+                                                            <i class="fas fa-trash"></i>
+                                                            <span>Delete</span>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <div class="modal fade" id="modalKonfirmasi{{ $pinjams->id_peminjaman }}"
+                                        tabindex="-1">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Konfirmasi Peminjaman</h5>
+                                                    <button type="button" class="btn-close"
+                                                        data-bs-dismiss="modal"></button>
+                                                </div>
+
+                                                <div class="modal-body">
+                                                    Yakin mau konfirmasi peminjaman buku
+                                                    <b>{{ $pinjams->buku->judul ?? '-' }}</b> ?
+                                                </div>
+
+                                                <div class="modal-footer">
+
+                                                    <!-- TOLAK -->
+                                                    <a href="{{ route('peminjaman.tolak', $pinjams->id_peminjaman) }}"
+                                                        class="btn btn-danger">
+                                                        Tolak
                                                     </a>
-                                                </li>
-                                                <li>
-                                                    <a class="dropdown-item d-flex align-items-center gap-2 text-danger"
-                                                        href="#">
-                                                        <i class="fas fa-trash"></i>
-                                                        <span>Delete</span>
+
+                                                    <!-- SETUJUI -->
+                                                    <a href="{{ route('peminjaman.acc', $pinjams->id_peminjaman) }}"
+                                                        class="btn btn-success">
+                                                        Setujui
                                                     </a>
-                                                </li>
-                                            </ul>
+
+                                                </div>
+                                            </div>
                                         </div>
-                                    </td>
-                                </tr>
+                                    </div>
 
-
+                                @empty
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -100,4 +163,16 @@
             padding-bottom: 12px !important;
         }
     </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof $ !== 'undefined') {
+                $('#table1').DataTable({
+                    destroy: true,
+                    language: {
+                        emptyTable: "📚 buku masih kosong"
+                    }
+                });
+            }
+        });
+    </script>
 @endsection

@@ -11,10 +11,23 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pengembalian', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+       Schema::create('pengembalian', function (Blueprint $table) {
+    $table->id('id_pengembalian');
+
+    $table->unsignedBigInteger('id_peminjaman');
+    $table->unsignedBigInteger('id_petugas');
+
+    $table->date('tanggal_kembali');
+    $table->integer('denda')->default(0);
+
+     $table->enum('status', ['tepat_waktu', 'terlambat'])
+          ->default('tepat_waktu');
+
+    $table->timestamps();
+
+    $table->foreign('id_peminjaman')->references('id_peminjaman')->on('peminjaman')->onDelete('cascade');
+    $table->foreign('id_petugas')->references('id_petugas')->on('petugas')->onDelete('cascade');
+});
     }
 
     /**

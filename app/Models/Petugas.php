@@ -13,6 +13,6 @@ class Petugas extends Model
     // 🔥 TAMBAHIN DI SINI
     public function user()
     {
-        return $this->belongsTo(User::class, 'email', 'email');
+        return $this->belongsTo(User::class, 'id_user', 'id_user');
     }
 }

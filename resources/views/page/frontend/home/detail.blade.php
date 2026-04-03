@@ -62,11 +62,17 @@
                         <!-- Button -->
                         <div class="book-action mt-4">
                             @auth
-                                <a href="/anggota/peminjaman?id_buku={{ $buku->id_buku }}" class="btn-pinjam">
-                                    📚 Pinjam Buku
-                                </a>
+                                @if ($buku->stock > 0)
+                                    <a href="/anggota/peminjaman?id_buku={{ $buku->id_buku }}" class="btn-pinjam">
+                                        📚 Pinjam Buku
+                                    </a>
+                                @else
+                                    <a class="btn-pinjam disabled" onclick="return false;">
+                                        📚 Stok Habis
+                                    </a>
+                                @endif
                             @else
-                                <a href="#" onclick="return confirmLogin()" class="btn-pinjam">
+                                <a class="btn-pinjam disabled" href="javascript:void(0);" onclick="confirmLogin()">
                                     📚 Pinjam Buku
                                 </a>
                             @endauth
@@ -82,6 +88,13 @@
         </div>
     </section>
     <style>
+        .btn-pinjam.disabled {
+            background: #ccc;
+            cursor: pointer;
+            /* ubah dari not-allowed */
+            opacity: 0.7;
+        }
+
         .book-cover img {
             width: 100%;
             height: 520px;
@@ -117,7 +130,7 @@
         }
 
         .badge-kategori {
-            background: #f5d0c5;
+            background: #c59d5f;
             color: #7a3e2b;
             padding: 6px 14px;
             border-radius: 999px;
