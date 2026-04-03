@@ -9,9 +9,9 @@
 
                     <div class="borrow-card p-4">
 
-                        <h3 class="mb-4 text-center">Form Peminjaman Buku</h3>
+                        <h3 class="mb-4 text-center">Form Pengembalian Buku</h3>
 
-                        <form action="/anggota/peminjaman/store" method="POST" id="formPinjam"
+                        <form action="/anggota/pengembalian/store" method="POST" id=""
                             @guest onsubmit="confirmLogin(); return false;" @endguest>
                             @csrf
 
@@ -46,8 +46,8 @@
                                     <small class="text-muted">Buku sudah dipilih dari halaman sebelumnya</small>
                                 @else
                                     {{-- MODE MANUAL (DROP DOWN) --}}
-                                    <select name="id_buku" id="pilih_buku" class="form-control" required
-                                        @guest onclick="confirmLogin()" disabled @endguest>
+                                    <select name="id_buku" id="pilih_buku" onchange="filterBuku(this.value)"
+                                        class="form-control" required @guest onclick="confirmLogin()" disabled @endguest>
 
                                         <option value="">-- Pilih Buku --</option>
 
@@ -67,19 +67,38 @@
                             <!-- Tanggal Wajib Kembali -->
                             <div class="mb-4">
                                 <label class="form-label">Tanggal Wajib Kembali</label>
-                                <input type="date" class="form-control" id="wajib_kembali_view" readonly>
-                                <input type="hidden" name="wajib_kembali" id="wajib_kembali">
+                                <input type="hidden" name="wajib_kembali" id="wajib_kembali"
+                                    value="{{ $peminjaman ? \Carbon\Carbon::parse($peminjaman->wajib_kembali)->format('Y-m-d') : '' }}">
+
+                                <input type="date" class="form-control" id="wajib_kembali_view"
+                                    value="{{ $peminjaman ? \Carbon\Carbon::parse($peminjaman->wajib_kembali)->format('Y-m-d') : '' }}"
+                                    readonly>
                             </div>
-                            <div id="note_peminjaman" class="alert alert-info d-none mt-2">
-                                📌 Buku harus dikembalikan maksimal <b>3 hari</b><br>
-                                📌 Keterlambatan akan dikenakan denda
+                            <!-- Tanggal Kembali (otomatis hari ini) -->
+                            <div class="mb-4">
+                                <label class="form-label">Tanggal Kembali</label>
+                                <input type="date" class="form-control" id="tanggal_kembali" name="tanggal_kembali"
+                                    readonly>
                             </div>
+
+                            <!-- Status -->
+                            <div class="mb-3">
+                                <label class="form-label">Status Pengembalian</label>
+                                <input type="text" class="form-control" id="status_pengembalian" readonly>
+                            </div>
+
+                            <!-- Denda -->
+                            <div class="mb-3">
+                                <label class="form-label">Denda</label>
+                                <input type="number" class="form-control" id="denda" name="denda" readonly>
+                            </div>
+
 
                             <!-- Button -->
                             <div class="d-flex gap-2">
                                 <button type="submit" class="btn-pinjam"
                                     @guest onclick="confirmLogin(); return false;" @endguest>
-                                    Pinjam
+                                    kembalikan
                                 </button>
 
                                 <a href="/" class="btn-kembali">
@@ -177,92 +196,75 @@
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <script>
-        function confirmLogin() {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Harus Login!',
-                text: 'Silahkan login atau daftar dulu untuk meminjam buku',
-                confirmButtonText: 'Login Sekarang',
-                confirmButtonColor: '#c59d5f'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = "/loginuser";
-                }
-            });
-        }
-    </script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
 
-            let selectBuku = document.getElementById('pilih_buku');
+            // set tanggal kembali = hari ini
+            let today = new Date().toISOString().split('T')[0];
+            document.getElementById("tanggal_kembali").value = today;
 
-            // format yyyy-mm-dd
-            let formatDate = (date) => {
-                return date.toISOString().split('T')[0];
-            };
+            // ambil tanggal wajib kembali
+            let wajibInput = document.getElementById("wajib_kembali");
 
-            selectBuku.addEventListener('change', function() {
+            wajibInput.addEventListener("change", hitungDenda);
 
-                if (this.value !== "") {
+            function hitungDenda() {
+                let wajib = new Date(wajibInput.value);
+                let kembali = new Date(today);
 
-                    let today = new Date();
+                let selisihHari = Math.floor((kembali - wajib) / (1000 * 60 * 60 * 24));
 
-                    let tanggalPinjam = formatDate(today);
-                    document.getElementById('tanggal_pinjam').value = tanggalPinjam;
+                let dendaInput = document.getElementById("denda");
+                let statusInput = document.getElementById("status_pengembalian");
 
-                    let kembali = new Date();
-                    kembali.setDate(today.getDate() + 3);
 
-                    let wajibKembali = formatDate(kembali);
+                if (selisihHari > 0) {
+                    // TELAT
+                    let denda = selisihHari * 1000; // contoh: 1000/hari
 
-                    document.getElementById('wajib_kembali').value = wajibKembali;
-                    document.getElementById('wajib_kembali_view').value = wajibKembali;
+                    dendaInput.value = denda;
+                    statusInput.value = "Terlambat";
 
-                    // 🔥 TAMPILKAN NOTE
-                    document.getElementById('note_peminjaman').classList.remove('d-none');
+                    catatan.value = "Pengembalian terlambat " + selisihHari + " hari. Dikenakan denda.";
                 } else {
-                    // kalau balik ke kosong, note hilang lagi
-                    document.getElementById('note_peminjaman').classList.add('d-none');
-                }
-            });
+                    // TEPAT WAKTU
+                    dendaInput.value = 0;
+                    statusInput.value = "Tepat Waktu";
 
+
+                }
+            }
+
+            // trigger pertama kali
+            hitungDenda();
         });
     </script>
-    @if (session('success'))
-        <script>
+    <script>
+        function filterBuku(id_buku) {
+            window.location.href = "?id_buku=" + id_buku;
+        }
+    </script>
+
+    <script>
+        @if (session('success'))
             Swal.fire({
                 icon: 'success',
-                title: 'Berhasil!',
-                text: '{{ session('success') }}',
-                showConfirmButton: false, // ❌ gak ada tombol OK
-                timer: 3000 // ⏱ auto hilang 2 detik
+                title: 'Berhasil',
+                text: "{{ session('success') }}",
+                timer: 2000,
+                showConfirmButton: false
             });
-        </script>
-    @endif
-    @if (isset($selectedBuku))
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
+        @endif
 
-                let today = new Date();
-
-                let formatDate = (date) => {
-                    return date.toISOString().split('T')[0];
-                };
-
-                let tanggalPinjam = formatDate(today);
-                document.getElementById('tanggal_pinjam').value = tanggalPinjam;
-
-                let kembali = new Date();
-                kembali.setDate(today.getDate() + 3);
-
-                let wajibKembali = formatDate(kembali);
-
-                document.getElementById('wajib_kembali').value = wajibKembali;
-                document.getElementById('wajib_kembali_view').value = wajibKembali;
-                document.getElementById('note_peminjaman').classList.remove('d-none');
+        @if (session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal',
+                text: "{{ session('error') }}",
+                timer: 2000,
+                showConfirmButton: false
             });
-        </script>
-    @endif
+        @endif
+    </script>
+
 @endsection

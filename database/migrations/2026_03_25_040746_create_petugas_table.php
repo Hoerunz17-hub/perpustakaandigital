@@ -21,10 +21,10 @@ return new class extends Migration
    $table->string('email')->unique();
    $table->string('image')->nullable();
 
-    // $table->foreignId('id_user')
-    //   ->references('id_user')
-    //   ->on('users')
-    //   ->onDelete('cascade');
+    $table->foreignId('id_user')
+      ->references('id_user')
+      ->on('users')
+      ->onDelete('cascade');
 
     $table->timestamps();
 });

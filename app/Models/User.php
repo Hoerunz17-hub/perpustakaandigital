@@ -47,11 +47,15 @@ class User extends Authenticatable
      // 🔥 TAMBAHIN DI SINI
     public function petugas()
     {
-        return $this->hasOne(Petugas::class, 'email', 'email');
+         return $this->hasOne(Petugas::class, 'id_user', 'id_user');
     }
 
     public function anggota()
 {
     return $this->hasOne(Anggota::class, 'id_user', 'id_user');
+}
+public function peminjaman()
+{
+    return $this->hasMany(Peminjaman::class, 'id_anggota', 'id_anggota');
 }
 }
