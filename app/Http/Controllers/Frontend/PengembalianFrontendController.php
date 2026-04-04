@@ -13,34 +13,35 @@ use Illuminate\Support\Facades\DB;
 
 class PengembalianFrontendController extends Controller
 {
-  public function index(Request $request)
+public function index(Request $request)
 {
-    $buku = Buku::where('is_active', 1)->get();
+    $anggotaId = Auth::user()->anggota->id_anggota;
+
+    $peminjaman = Peminjaman::with('buku')
+        ->where('id_anggota', $anggotaId)
+        ->where('status', 'dipinjam')
+        ->get();
+
+    $buku = $peminjaman->pluck('buku');
 
     $selectedBuku = $request->id_buku;
 
-    $peminjaman = null;
+    $detailPinjam = null;
 
-   if ($selectedBuku) {
-    $peminjaman = Peminjaman::where('id_buku', $selectedBuku)
-        ->where('status', 'dipinjam')
-        ->whereDoesntHave('pengembalian')
-        ->latest()
-        ->first();
-}
- // 👉 TAMBAHIN DI SINI
-    if ($selectedBuku && $peminjaman == null) {
-        return redirect('/anggota/pengembalian')
-            ->with('success', 'Buku sudah dikembalikan');
+    if ($selectedBuku) {
+        $detailPinjam = Peminjaman::where('id_anggota', $anggotaId)
+            ->where('id_buku', $selectedBuku)
+            ->where('status', 'dipinjam')
+            ->first();
     }
-    return view("page.frontend.pengembalian.index", compact('selectedBuku', 'buku', 'peminjaman'));
-}
-  public function store(Request $request)
+
+    return view('page.frontend.pengembalian.index', compact('buku', 'selectedBuku', 'detailPinjam'));
+}  public function store(Request $request)
 {
     $request->validate([
-        'id_buku' => 'required',
-        'tanggal_kembali' => 'required',
-    ]);
+    'id_buku' => 'required|exists:buku,id_buku',
+    'tanggal_kembali' => 'required|date',
+]);
 
     if (!Auth::check()) {
         return redirect()->back()->with('error', 'Silakan login terlebih dahulu');
@@ -79,7 +80,7 @@ $peminjaman = Peminjaman::where('id_buku', $request->id_buku)
         // 1. simpan pengembalian
         Pengembalian::create([
             'id_peminjaman' => $peminjaman->id_peminjaman,
-            'id_petugas' => 1,
+           'id_petugas' => 1,
             'tanggal_kembali' => $request->tanggal_kembali,
             'denda' => $denda,
             'status' => $status,
@@ -91,12 +92,14 @@ $peminjaman = Peminjaman::where('id_buku', $request->id_buku)
 
         // 3. update stok buku
         $buku = Buku::find($request->id_buku);
-        $buku->stock += 1;
-        $buku->save();
+
+if ($buku) {
+    $buku->increment('stock');
+}
 
         DB::commit();
 
-        return redirect('/anggota/pengembalian')->with('success', 'Pengembalian berhasil');
+        return redirect('/bukusaya')->with('success', 'Pengembalian berhasil');
 
     } catch (\Exception $e) {
         DB::rollback();

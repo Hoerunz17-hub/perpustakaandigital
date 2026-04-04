@@ -11,15 +11,26 @@ use Illuminate\Support\Facades\DB;
 
 class PeminjamanFrontendController extends Controller
 {
-    public function index(Request $request)
+   public function index(Request $request)
 {
-    $buku = Buku::where('is_active', 1)->get();
+    $buku = Buku::where('is_active', 1)
+        ->where('stock', '>', 0)
+        ->get();
 
-    // ambil id buku dari query string (?id_buku=...)
     $selectedBuku = $request->id_buku;
 
-    return view('page.frontend.peminjaman.index', compact('buku', 'selectedBuku'));
+    // 🔥 TAMBAH INI
+    $totalPinjam = 0;
 
+    if (Auth::check() && Auth::user()->anggota) {
+        $anggotaId = Auth::user()->anggota->id_anggota;
+
+        $totalPinjam = Peminjaman::where('id_anggota', $anggotaId)
+            ->whereIn('status', ['menunggu', 'dipinjam'])
+            ->count();
+    }
+
+    return view('page.frontend.peminjaman.index', compact('buku', 'selectedBuku', 'totalPinjam'));
 }
 public function store(Request $request)
 {

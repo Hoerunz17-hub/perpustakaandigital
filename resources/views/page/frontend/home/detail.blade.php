@@ -63,16 +63,22 @@
                         <div class="book-action mt-4">
                             @auth
                                 @if ($buku->stock > 0)
-                                    <a href="/anggota/peminjaman?id_buku={{ $buku->id_buku }}" class="btn-pinjam">
-                                        📚 Pinjam Buku
-                                    </a>
+                                    @if ($totalPinjam >= 3)
+                                        <a href="javascript:void(0);" class="btn-pinjam" onclick="limitPinjam()">
+                                            📚 Pinjam Buku
+                                        </a>
+                                    @else
+                                        <a href="/anggota/peminjaman?id_buku={{ $buku->id_buku }}" class="btn-pinjam">
+                                            📚 Pinjam Buku
+                                        </a>
+                                    @endif
                                 @else
                                     <a class="btn-pinjam disabled" onclick="return false;">
                                         📚 Stok Habis
                                     </a>
                                 @endif
                             @else
-                                <a class="btn-pinjam disabled" href="javascript:void(0);" onclick="confirmLogin()">
+                                <a class="btn-pinjam" href="javascript:void(0);" onclick="confirmLogin()">
                                     📚 Pinjam Buku
                                 </a>
                             @endauth
@@ -88,13 +94,6 @@
         </div>
     </section>
     <style>
-        .btn-pinjam.disabled {
-            background: #ccc;
-            cursor: pointer;
-            /* ubah dari not-allowed */
-            opacity: 0.7;
-        }
-
         .book-cover img {
             width: 100%;
             height: 520px;
@@ -242,6 +241,29 @@
                 }
             });
             return false;
+        }
+    </script>
+    <script>
+        function limitPinjam() {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Batas Peminjaman!',
+                html: `
+                Kamu sudah meminjam <b>3 buku</b><br><br>
+                📌 Silakan kembalikan buku terlebih dahulu<br>
+                sebelum meminjam lagi
+            `,
+                confirmButtonText: 'Oke',
+                confirmButtonColor: '#c59d5f',
+
+                // 🔥 INI YANG KAMU MAU
+                showClass: {
+                    popup: 'animate__animated animate__zoomIn'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOut'
+                }
+            });
         }
     </script>
 @endsection

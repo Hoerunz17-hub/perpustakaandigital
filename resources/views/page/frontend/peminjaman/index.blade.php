@@ -10,7 +10,18 @@
                     <div class="borrow-card p-4">
 
                         <h3 class="mb-4 text-center">Form Peminjaman Buku</h3>
-
+                        @if (isset($totalPinjam) && $totalPinjam >= 3)
+                            <div class="alert alert-warning">
+                                ⚠️ Kamu sudah meminjam <b>3 buku</b><br>
+                                Silakan kembalikan buku terlebih dahulu sebelum meminjam lagi
+                            </div>
+                        @endif
+                        {{-- ALERT ERROR --}}
+                        @if (session('error'))
+                            <div class="alert alert-danger">
+                                ❌ {{ session('error') }}
+                            </div>
+                        @endif
                         <form action="/anggota/peminjaman/store" method="POST" id="formPinjam"
                             @guest onsubmit="confirmLogin(); return false;" @endguest>
                             @csrf
@@ -31,9 +42,13 @@
                             <div class="mb-3">
                                 <label class="form-label">Pilih Buku</label>
 
-                                @if (isset($selectedBuku))
-                                    {{-- MODE DARI DETAIL (AUTO SELECT, TANPA DROPDOWN) --}}
-
+                                @if ($buku->isEmpty())
+                                    {{-- ❌ KALAU BUKU KOSONG --}}
+                                    <div class="alert alert-warning">
+                                        Buku sedang tidak tersedia / stok habis
+                                    </div>
+                                @elseif (isset($selectedBuku))
+                                    {{-- MODE DARI DETAIL --}}
                                     <input type="hidden" name="id_buku" value="{{ $selectedBuku }}">
 
                                     @php
@@ -43,11 +58,13 @@
                                     <input type="text" class="form-control"
                                         value="{{ $selectedBook ? $selectedBook->judul_buku : 'Buku tidak ditemukan' }}"
                                         readonly>
+
                                     <small class="text-muted">Buku sudah dipilih dari halaman sebelumnya</small>
                                 @else
-                                    {{-- MODE MANUAL (DROP DOWN) --}}
+                                    {{-- ✅ NORMAL DROPDOWN --}}
                                     <select name="id_buku" id="pilih_buku" class="form-control" required
-                                        @guest onclick="confirmLogin()" disabled @endguest>
+                                        @guest onclick="confirmLogin()" disabled @endguest
+                                        {{ isset($totalPinjam) && $totalPinjam >= 3 ? 'disabled' : '' }}>
 
                                         <option value="">-- Pilih Buku --</option>
 
@@ -78,7 +95,8 @@
                             <!-- Button -->
                             <div class="d-flex gap-2">
                                 <button type="submit" class="btn-pinjam"
-                                    @guest onclick="confirmLogin(); return false;" @endguest>
+                                    @guest onclick="confirmLogin(); return false;" @endguest
+                                    {{ isset($totalPinjam) && $totalPinjam >= 3 ? 'disabled' : '' }}>
                                     Pinjam
                                 </button>
 

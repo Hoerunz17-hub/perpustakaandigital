@@ -75,21 +75,61 @@
 
                     <div class="product-list" data-aos="fade-up">
                         <div class="row">
+
                             @forelse ($peminjaman as $pinjam)
+                                @php
+                                    $today = \Carbon\Carbon::today();
+                                    $wajib = \Carbon\Carbon::parse($pinjam->wajib_kembali)->startOfDay();
+
+                                    $selisih = $today->diffInDays($wajib, false);
+                                @endphp
                                 <div class="col-md-3">
                                     <div class="product-item">
                                         <figure class="product-style">
                                             <img src="{{ asset('storage/' . $pinjam->buku->cover) }}" alt="Books"
                                                 class="product-item">
-                                            <button type="button" class="add-to-cart" data-product-tile="add-to-cart"
+                                            <button type="button"
+                                                class="add-to-cart {{ $selisih < 0 ? 'bg-danger text-white' : '' }}"
+                                                data-product-tile="add-to-cart"
                                                 onclick="window.location.href='{{ url('/anggota/pengembalian?id_buku=' . $pinjam->id_buku) }}'">
                                                 Kembalikan Buku
                                             </button>
                                         </figure>
                                         <figcaption>
                                             <h3>{{ $pinjam->buku->judul_buku ?? '-' }}</h3>
-                                            <span>{{ $pinjam->buku->penulis ?? '-' }}</span>
 
+
+                                            @if ($selisih < 0)
+                                                <small class="text-danger d-block">
+                                                    ⚠️ Harap segera dikembalikan untuk menghindari denda lebih besar
+                                                </small>
+                                            @endif
+                                            <span>{{ $pinjam->buku->penulis ?? '-' }}</span>
+                                            <div class="mt-2">
+
+                                                @if ($selisih < 0)
+                                                    <span class="badge bg-danger">
+                                                        Terlambat {{ abs($selisih) }} hari 🚨
+                                                    </span>
+                                                @elseif ($selisih == 0)
+                                                    <span class="badge bg-warning text-dark">
+                                                        Hari ini batas terakhir ⚠️
+                                                    </span>
+                                                @elseif ($selisih == 1)
+                                                    <span class="badge bg-warning text-dark">
+                                                        Besok harus dikembalikan ⏳
+                                                    </span>
+                                                @else
+                                                    <span class="badge bg-success">
+                                                        Dipinjam
+                                                    </span>
+                                                @endif
+
+                                            </div>
+                                            <small class="d-block mt-1 text-muted">
+                                                Wajib kembali:
+                                                {{ \Carbon\Carbon::parse($pinjam->wajib_kembali)->translatedFormat('d M Y') }}
+                                            </small>
                                         </figcaption>
                                     </div>
                                 </div>
@@ -174,4 +214,26 @@
             color: #888;
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        @if (session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil',
+                text: "{{ session('success') }}",
+                timer: 3000,
+                showConfirmButton: false
+            });
+        @endif
+
+        @if (session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal',
+                text: "{{ session('error') }}",
+                timer: 3000,
+                showConfirmButton: false
+            });
+        @endif
+    </script>
 @endsection
