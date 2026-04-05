@@ -17,12 +17,12 @@
                         <div class="row">
                             <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start ">
                                 <div class="stats-icon purple mb-2">
-                                    <i class="iconly-boldShow"></i>
+                                    <i class="fas fa-money-bill-wave"></i>
                                 </div>
                             </div>
                             <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
-                                <h6 class="text-muted font-semibold">Profile Views</h6>
-                                <h6 class="font-extrabold mb-0">112.000</h6>
+                                <h6 class="text-muted font-semibold">Total Denda</h6>
+                                <h6 class="font-extrabold mb-0"> {{ 'Rp ' . number_format($totalDenda, 0, ',', '.') }}</h6>
                             </div>
                         </div>
                     </div>
@@ -39,7 +39,7 @@
                             </div>
                             <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
                                 <h6 class="text-muted font-semibold">Petugas</h6>
-                                <h6 class="font-extrabold mb-0">183.000</h6>
+                                <h6 class="font-extrabold mb-0">{{ $jumlahPetugas }}</h6>
                             </div>
                         </div>
                     </div>
@@ -56,7 +56,7 @@
                             </div>
                             <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
                                 <h6 class="text-muted font-semibold">Anggota</h6>
-                                <h6 class="font-extrabold mb-0">80.000</h6>
+                                <h6 class="font-extrabold mb-0">{{ $jumlahAnggota }}</h6>
                             </div>
                         </div>
                     </div>
@@ -73,7 +73,7 @@
                             </div>
                             <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
                                 <h6 class="text-muted font-semibold">Buku</h6>
-                                <h6 class="font-extrabold mb-0">112</h6>
+                                <h6 class="font-extrabold mb-0">{{ $jumlahBuku }}</h6>
                             </div>
                         </div>
                     </div>
@@ -84,7 +84,7 @@
             <div class="card">
                 <div class="card-header">
                     <h5 class="card-title">
-                        History peminjaman
+                        Table Keterlambatan
                     </h5>
                 </div>
                 <div class="card-body">
@@ -93,45 +93,47 @@
                             <thead>
                                 <tr>
                                     <th class="text-nowrap">Nama</th>
-                                    <th class="text-nowrap">Buku Yang dipinjam</th>
-                                    <th class="text-nowrap">Tanggal Pinjam</th>
+                                    <th class="text-nowrap">Buku</th>
+                                    <th class="text-nowrap">Wajib Kembali</th>
                                     <th class="text-nowrap">Tanggal Kembali</th>
-                                    <th class="text-nowrap">Action</th>
+                                    <th class="text-nowrap">Terlambat</th>
+                                    <th class="text-nowrap">Denda</th>
+
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td class="text-nowrap">Graiden</td>
-                                    <td class="text-nowrap">Buku Sholat</td>
-                                    <td class="text-nowrap">17-05026</td>
-                                    <td class="text-nowrap">10-08-25</td>
-                                    <td class="text-center align-middle action-column">
-                                        <div class="dropdown dropstart">
-                                            <button class="btn border-0 bg-transparent p-0" type="button"
-                                                data-bs-toggle="dropdown">
-                                                <i class="bi bi-three-dots-vertical fs-5"></i>
-                                            </button>
+                                @forelse ($keterlambatan as $item)
+                                    <tr>
+                                        <td>
+                                            {{ $item->peminjaman->anggota->nama_anggota ?? '-' }}
+                                        </td>
+                                        <td>
+                                            {{ $item->peminjaman->buku->judul_buku ?? '-' }}
+                                        </td>
 
-                                            <ul class="dropdown-menu shadow-sm">
-                                                <li>
-                                                    <a class="dropdown-item d-flex align-items-center gap-2" href="#">
-                                                        <i class="bi bi-pencil"></i>
-                                                        <span>Edit</span>
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a class="dropdown-item d-flex align-items-center gap-2 text-danger"
-                                                        href="#">
-                                                        <i class="bi bi-trash"></i>
-                                                        <span>Delete</span>
-                                                    </a>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </td>
-                                </tr>
+                                        <td>
+                                            {{ \Carbon\Carbon::parse($item->peminjaman->wajib_kembali)->format('d-m-Y') }}
+                                        </td>
 
+                                        <td>
+                                            {{ $item->tanggal_kembali ? \Carbon\Carbon::parse($item->tanggal_kembali)->format('d-m-Y') : '-' }}
+                                        </td>
 
+                                        <td>
+                                            @php
+                                                $telat = \Carbon\Carbon::parse(
+                                                    $item->peminjaman->wajib_kembali,
+                                                )->diffInDays(\Carbon\Carbon::parse($item->tanggal_kembali), false);
+                                            @endphp
+                                            {{ $telat > 0 ? $telat . ' hari' : '-' }}
+                                        </td>
+
+                                        <td>
+                                            {{ $item->denda ? 'Rp ' . number_format($item->denda, 0, ',', '.') : '-' }}
+                                        </td>
+                                    </tr>
+                                @empty
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -156,4 +158,16 @@
             padding-bottom: 12px !important;
         }
     </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof $ !== 'undefined') {
+                $('#table1').DataTable({
+                    destroy: true,
+                    language: {
+                        emptyTable: "data kosong"
+                    }
+                });
+            }
+        });
+    </script>
 @endsection

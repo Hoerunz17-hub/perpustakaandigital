@@ -24,15 +24,8 @@
                                 <a href="/anggota/peminjaman">Peminjaman</a>
                             </li>
 
-                            <li class="menu-item">
-                                <a href="#">Pengembalian</a>
-                            </li>
-
-                            <li class="menu-item">
-                                <a href="#">Offer</a>
-                            </li>
-
-                            <li class="menu-item {{ request()->is('bukusaya') ? 'active' : '' }}">
+                            <li
+                                class="menu-item {{ request()->is('bukusaya*') || request()->is('anggota/pengembalian*') ? 'active' : '' }}">
                                 <a href="/bukusaya">Buku Saya</a>
                             </li>
 
