@@ -93,7 +93,8 @@
                             <thead>
                                 <tr>
                                     <th class="text-nowrap">Nama</th>
-                                    <th class="text-nowrap">Buku Yang dipinjam</th>
+                                    <th class="text-nowrap">Buku dipinjam</th>
+                                    <th class="text-nowrap">Kode Buku</th>
                                     <th class="text-nowrap">Tanggal Pinjam</th>
                                     <th class="text-nowrap">Tanggal Kembali</th>
                                     <th class="text-nowrap">Status</th>
@@ -109,6 +110,9 @@
 
                                         <td class="text-nowrap">
                                             {{ $item->buku->judul_buku ?? '-' }}
+                                        </td>
+                                        <td class="text-nowrap">
+                                            {{ $item->buku->kode_buku ?? '-' }}
                                         </td>
 
                                         <td class="text-nowrap">

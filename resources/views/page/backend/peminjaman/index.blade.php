@@ -32,7 +32,7 @@
                                 <tr>
                                     <th class="text-nowrap">No</th>
                                     <th class="text-nowrap">Nama</th>
-                                    <th class="text-nowrap">Buku Yang Dipinjam</th>
+                                    <th class="text-nowrap">Buku Dipinjam</th>
                                     <th class="text-nowrap">Tanggal Pinjam</th>
                                     <th class="text-nowrap">Wajib Kembali</th>
                                     <th class="text-nowrap">Tanggal Kembali</th>

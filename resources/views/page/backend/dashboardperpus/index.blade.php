@@ -94,6 +94,7 @@
                                 <tr>
                                     <th class="text-nowrap">Nama</th>
                                     <th class="text-nowrap">Buku</th>
+                                    <th class="text-nowrap">Kode Buku</th>
                                     <th class="text-nowrap">Wajib Kembali</th>
                                     <th class="text-nowrap">Tanggal Kembali</th>
                                     <th class="text-nowrap">Terlambat</th>
@@ -109,6 +110,9 @@
                                         </td>
                                         <td>
                                             {{ $item->peminjaman->buku->judul_buku ?? '-' }}
+                                        </td>
+                                        <td>
+                                            {{ $item->peminjaman->buku->kode_buku ?? '-' }}
                                         </td>
 
                                         <td>

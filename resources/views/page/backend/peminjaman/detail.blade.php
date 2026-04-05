@@ -34,61 +34,71 @@
                                   @endphp
 
                                   <img src="{{ $foto && Storage::disk('public')->exists($foto) ? Storage::url($foto) : asset('assets/images/book.png') }}"
-                                      width="80" class="rounded shadow-sm">
+                                      width="120" class="rounded shadow-sm">
                               </div>
 
                               {{-- INFO --}}
                               <div class="col-md-7">
 
-                                  {{-- BUKU --}}
-                                  <div class="mb-2">
-                                      <small class="text-muted">Buku</small>
-                                      <div class="fw-bold">
-                                          {{ $peminjaman->buku->judul_buku ?? '-' }}
+                                  {{-- BARIS 1: BUKU + KODE --}}
+                                  <div class="row mb-3">
+                                      <div class="col-md-6">
+                                          <small class="text-muted d-block">Buku</small>
+                                          <div class="fw-bold fs-5">
+                                              {{ $peminjaman->buku->judul_buku ?? '-' }}
+                                          </div>
+                                      </div>
+
+                                      <div class="col-md-6">
+                                          <small class="text-muted d-block">Kode Buku</small>
+                                          <span class="badge bg-light text-dark border px-2 py-1">
+                                              {{ $peminjaman->buku->kode_buku ?? '-' }}
+                                          </span>
                                       </div>
                                   </div>
 
-                                  {{-- ANGGOTA --}}
-                                  <div class="mb-2">
-                                      <small class="text-muted">Anggota</small>
-                                      <div class="fw-semibold">
-                                          {{ $peminjaman->anggota->nama_anggota ?? '-' }}
+                                  {{-- BARIS 2: ANGGOTA + STATUS --}}
+                                  <div class="row">
+                                      <div class="col-md-6">
+                                          <small class="text-muted d-block">Anggota</small>
+                                          <div class="fw-semibold fs-5">
+                                              {{ $peminjaman->anggota->nama_anggota ?? '-' }}
+                                          </div>
                                       </div>
-                                  </div>
 
-                                  {{-- STATUS --}}
-                                  @php
-                                      $status = $peminjaman->status;
+                                      <div class="col-md-6">
+                                          <small class="text-muted d-block">Status</small>
 
-                                      if ($peminjaman->pengembalian && $peminjaman->pengembalian->denda > 0) {
-                                          $status = 'terlambat';
-                                      }
-                                  @endphp
+                                          @php
+                                              $status = $peminjaman->status;
 
-                                  <div>
-                                      <small class="text-muted">Status</small><br>
+                                              if ($peminjaman->pengembalian && $peminjaman->pengembalian->denda > 0) {
+                                                  $status = 'terlambat';
+                                              }
+                                          @endphp
 
-                                      @switch($status)
-                                          @case('menunggu')
-                                              <span class="badge bg-warning px-3 py-2">Menunggu</span>
-                                          @break
+                                          @switch($status)
+                                              @case('menunggu')
+                                                  <span class="badge bg-warning px-2 py-1">Menunggu</span>
+                                              @break
 
-                                          @case('dipinjam')
-                                              <span class="badge bg-primary px-3 py-2">Dipinjam</span>
-                                          @break
+                                              @case('dipinjam')
+                                                  <span class="badge bg-primary px-2 py-1">Dipinjam</span>
+                                              @break
 
-                                          @case('ditolak')
-                                              <span class="badge bg-secondary px-3 py-2">Ditolak</span>
-                                          @break
+                                              @case('ditolak')
+                                                  <span class="badge bg-secondary px-2 py-1">Ditolak</span>
+                                              @break
 
-                                          @case('terlambat')
-                                              <span class="badge bg-danger px-3 py-2">Terlambat</span>
-                                          @break
+                                              @case('terlambat')
+                                                  <span class="badge bg-danger px-2 py-1">Terlambat</span>
+                                              @break
 
-                                          @case('dikembalikan')
-                                              <span class="badge bg-success px-3 py-2">Dikembalikan</span>
-                                          @break
-                                      @endswitch
+                                              @case('dikembalikan')
+                                                  <span class="badge bg-success px-2 py-1">Dikembalikan</span>
+                                              @break
+                                          @endswitch
+                                      </div>
                                   </div>
 
                               </div>

@@ -84,7 +84,7 @@
                                                     </li>
                                                     <li>
                                                         <a class="dropdown-item d-flex align-items-center gap-2"
-                                                            href="/buku/show/{{ $buku->id_buku }}">
+                                                            href="/petugas/buku/show/{{ $buku->id_buku }}">
                                                             <i class="fas fa-eye"></i>
                                                             <span>Detail</span>
                                                         </a>
