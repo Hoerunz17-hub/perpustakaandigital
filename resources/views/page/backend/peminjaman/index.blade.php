@@ -75,6 +75,11 @@
                                                     data-bs-target="#modalKonfirmasi{{ $pinjams->id_peminjaman }}">
                                                     Konfirmasi
                                                 </button>
+                                            @elseif ($pinjams->status == 'menunggu_pengembalian')
+                                                <button class="btn btn-sm btn-info" data-bs-toggle="modal"
+                                                    data-bs-target="#modalKembali{{ $pinjams->id_peminjaman }}">
+                                                    Konfirmasi Pengembalian
+                                                </button>
                                             @elseif ($pinjams->status == 'dipinjam')
                                                 <span class="badge bg-primary">Dipinjam</span>
                                             @elseif ($pinjams->status == 'ditolak')
@@ -125,7 +130,7 @@
 
                                                 <div class="modal-body">
                                                     Yakin mau konfirmasi peminjaman buku
-                                                    <b>{{ $pinjams->buku->judul ?? '-' }}</b> ?
+                                                    <b>{{ $pinjams->buku->judul_buku ?? '-' }}</b> ?
                                                 </div>
 
                                                 <div class="modal-footer">
@@ -146,7 +151,38 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="modal fade" id="modalKembali{{ $pinjams->id_peminjaman }}" tabindex="-1">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Konfirmasi Pengembalian</h5>
+                                                    <button type="button" class="btn-close"
+                                                        data-bs-dismiss="modal"></button>
+                                                </div>
 
+                                                <div class="modal-body">
+                                                    Yakin buku <b>{{ $pinjams->buku->judul_buku ?? '-' }}</b> sudah
+                                                    dikembalikan?
+                                                </div>
+
+                                                <div class="modal-footer">
+
+                                                    <!-- TOLAK -->
+                                                    <a href="{{ route('peminjaman.tolakKembali', $pinjams->id_peminjaman) }}"
+                                                        class="btn btn-danger">
+                                                        Tolak
+                                                    </a>
+
+                                                    <!-- KONFIRMASI -->
+                                                    <a href="{{ route('peminjaman.konfirmasiKembali', $pinjams->id_peminjaman) }}"
+                                                        class="btn btn-success">
+                                                        Konfirmasi
+                                                    </a>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 @empty
                                 @endforelse
                             </tbody>

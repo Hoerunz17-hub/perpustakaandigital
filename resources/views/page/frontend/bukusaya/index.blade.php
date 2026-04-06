@@ -80,7 +80,9 @@
                                 @php
                                     $today = \Carbon\Carbon::today();
                                     $wajib = \Carbon\Carbon::parse($pinjam->wajib_kembali)->startOfDay();
-
+                                    $isPengembalianDitolak =
+                                        $pinjam->pengembalian && $pinjam->pengembalian->status == 'ditolak';
+                                    $isPeminjamanDitolak = $pinjam->status == 'ditolak';
                                     $selisih = $today->diffInDays($wajib, false);
                                 @endphp
                                 <div class="col-md-3">
@@ -88,32 +90,51 @@
                                         <figure class="product-style">
                                             <img src="{{ asset('storage/' . $pinjam->buku->cover) }}" alt="Books"
                                                 class="product-item">
-                                            <button type="button"
-                                                class="add-to-cart {{ $selisih < 0 ? 'bg-danger text-white' : '' }}"
-                                                data-product-tile="add-to-cart"
-                                                onclick="window.location.href='{{ url('/anggota/pengembalian?id_buku=' . $pinjam->id_buku) }}'">
-                                                Kembalikan Buku
-                                            </button>
+                                            @if ($isPengembalianDitolak)
+                                                <button class="add-to-cart bg-secondary" disabled>
+                                                    Pengembalian Ditolak
+                                                </button>
+                                            @elseif ($isPeminjamanDitolak)
+                                                <button class="add-to-cart bg-dark" disabled>
+                                                    Peminjaman Ditolak
+                                                </button>
+                                            @elseif ($pinjam->status == 'menunggu_pengembalian')
+                                                <button class="add-to-cart bg-warning text-dark" disabled>
+                                                    Menunggu Konfirmasi
+                                                </button>
+                                            @else
+                                                <button type="button"
+                                                    class="add-to-cart {{ $selisih < 0 ? 'bg-danger text-white' : '' }}"
+                                                    onclick="window.location.href='{{ url('/anggota/pengembalian?id_buku=' . $pinjam->id_buku) }}'">
+                                                    Kembalikan Buku
+                                                </button>
+                                            @endif
                                         </figure>
                                         <figcaption>
                                             <h3>{{ $pinjam->buku->judul_buku ?? '-' }}</h3>
 
-                                            @if ($selisih > 1)
-                                                <small class="text-success d-block">
-                                                    ⏳ Sisa waktu {{ $selisih }} hari lagi
-                                                </small>
-                                            @elseif ($selisih == 1)
-                                                <small class="text-warning d-block">
-                                                    ⚠️ Sisa waktu 1 hari lagi segera kembalikan!
-                                                </small>
-                                            @elseif ($selisih == 0)
-                                                <small class="text-warning d-block">
-                                                    ⚠️ Hari ini batas terakhir! segera kembalikan!
+                                            @if ($isPengembalianDitolak)
+                                                <small class="text-danger d-block">
+                                                    ⚠️ Pengembalian ditolak, tetap dalam status pinjam
                                                 </small>
                                             @else
-                                                <small class="text-danger d-block">
-                                                    🚨 Terlambat {{ abs($selisih) }} hari
-                                                </small>
+                                                @if ($selisih > 1)
+                                                    <small class="text-success d-block">
+                                                        ⏳ Sisa waktu {{ $selisih }} hari lagi
+                                                    </small>
+                                                @elseif ($selisih == 1)
+                                                    <small class="text-warning d-block">
+                                                        ⚠️ Sisa waktu 1 hari lagi segera kembalikan!
+                                                    </small>
+                                                @elseif ($selisih == 0)
+                                                    <small class="text-warning d-block">
+                                                        ⚠️ Hari ini batas terakhir! segera kembalikan!
+                                                    </small>
+                                                @else
+                                                    <small class="text-danger d-block">
+                                                        🚨 Terlambat {{ abs($selisih) }} hari
+                                                    </small>
+                                                @endif
                                             @endif
 
                                             @if ($selisih < 0)
@@ -129,22 +150,32 @@
                                             <span>{{ $pinjam->buku->penulis ?? '-' }}</span>
                                             <div class="mt-2">
 
-                                                @if ($selisih < 0)
-                                                    <span class="badge bg-danger">
-                                                        Terlambat {{ abs($selisih) }} hari 🚨
-                                                    </span>
-                                                @elseif ($selisih == 0)
-                                                    <span class="badge bg-warning text-dark">
-                                                        Hari ini batas terakhir ⚠️
-                                                    </span>
-                                                @elseif ($selisih == 1)
-                                                    <span class="badge bg-warning text-dark">
-                                                        Besok harus dikembalikan ⏳
-                                                    </span>
+                                                @if ($isPengembalianDitolak)
+                                                    <span class="badge bg-danger">Pengembalian Ditolak</span>
+                                                @elseif ($isPeminjamanDitolak)
+                                                    <span class="badge bg-dark">Peminjaman Ditolak</span>
+                                                @elseif ($pinjam->status == 'menunggu_pengembalian')
+                                                    <span class="badge bg-info">Menunggu Konfirmasi</span>
+                                                @elseif ($pinjam->status == 'dikembalikan')
+                                                    <span class="badge bg-success">Dikembalikan</span>
                                                 @else
-                                                    <span class="badge bg-success">
-                                                        Dipinjam
-                                                    </span>
+                                                    @if ($selisih < 0)
+                                                        <span class="badge bg-danger">
+                                                            Terlambat {{ abs($selisih) }} hari 🚨
+                                                        </span>
+                                                    @elseif ($selisih == 0)
+                                                        <span class="badge bg-warning text-dark">
+                                                            Hari ini batas terakhir ⚠️
+                                                        </span>
+                                                    @elseif ($selisih == 1)
+                                                        <span class="badge bg-warning text-dark">
+                                                            Besok harus dikembalikan ⏳
+                                                        </span>
+                                                    @else
+                                                        <span class="badge bg-success">
+                                                            Dipinjam
+                                                        </span>
+                                                    @endif
                                                 @endif
 
                                             </div>
@@ -198,18 +229,19 @@
 
                                 <div class="mt-2">
 
-                                    @if ($item->status == 'dikembalikan')
+                                    @if ($item->status == 'menunggu_pengembalian')
+                                        <span class="badge bg-info">Menunggu Konfirmasi</span>
+                                    @elseif ($item->status == 'ditolak')
+                                        <span class="badge bg-danger">Pengembalian Ditolak</span>
+                                    @elseif ($item->status == 'dikembalikan')
                                         @if ($item->pengembalian && $item->pengembalian->status == 'terlambat')
                                             <span class="badge bg-danger">Terlambat</span>
                                         @else
                                             <span class="badge bg-success">Dikembalikan</span>
                                         @endif
-                                    @elseif ($item->status == 'ditolak')
-                                        <span class="badge bg-warning text-dark">Ditolak</span>
                                     @endif
 
                                 </div>
-
                                 <small class="d-block mt-1 text-muted">
                                     Pinjam:
                                     {{ \Carbon\Carbon::parse($item->tanggal_pinjam)->translatedFormat('d M Y') }}

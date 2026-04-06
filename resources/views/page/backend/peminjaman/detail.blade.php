@@ -86,6 +86,10 @@
                                                   <span class="badge bg-primary px-2 py-1">Dipinjam</span>
                                               @break
 
+                                              @case('menunggu_pengembalian')
+                                                  <span class="badge bg-info px-2 py-1">Menunggu Konfirmasi Pengembalian</span>
+                                              @break
+
                                               @case('ditolak')
                                                   <span class="badge bg-secondary px-2 py-1">Ditolak</span>
                                               @break
@@ -221,6 +225,10 @@
 
                                           @case('menunggu')
                                               Menunggu Persetujuan
+                                          @break
+
+                                          @case('menunggu_pengembalian')
+                                              Menunggu Konfirmasi Pengembalian
                                           @break
 
                                           @case('terlambat')

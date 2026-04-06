@@ -23,10 +23,10 @@ class BukusayaFrontendController extends Controller
 
     // 📚 Buku yang masih dipinjam
     $peminjaman = $anggota
-        ->peminjaman()
-        ->where('status', 'dipinjam')
-        ->with('buku', 'pengembalian')
-        ->get();
+    ->peminjaman()
+    ->whereIn('status', ['dipinjam', 'menunggu_pengembalian'])
+    ->with('buku', 'pengembalian')
+    ->get();
 
     // 📜 History (SEMUA kecuali yang masih dipinjam)
     $history = $anggota

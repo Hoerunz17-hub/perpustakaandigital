@@ -15,9 +15,11 @@ class DashboardPetugasBackendController extends Controller
     $jumlahBuku = Buku::count();
     $jumlahAnggota = Anggota::count();
 
-    $bukuDipinjam = Peminjaman::where('status', 'dipinjam')->count();
-    $bukuDikembalikan = Peminjaman::where('status', 'dikembalikan')->count();
-    $bukuDitolak = Peminjaman::where('status', 'ditolak')->count();
+   $bukuDipinjam = Peminjaman::whereIn('status', ['dipinjam', 'menunggu'])->count();
+
+$bukuDikembalikan = Peminjaman::where('status', 'dikembalikan')->count();
+
+$bukuDitolak = Peminjaman::where('status', 'ditolak')->count();
  $historyPeminjaman = Peminjaman::with(['anggota', 'buku', 'pengembalian'])
      ->orderBy('tanggal_pinjam', 'desc')
     ->take(10)
