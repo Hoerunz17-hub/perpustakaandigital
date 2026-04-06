@@ -98,10 +98,32 @@
                                         <figcaption>
                                             <h3>{{ $pinjam->buku->judul_buku ?? '-' }}</h3>
 
+                                            @if ($selisih > 1)
+                                                <small class="text-success d-block">
+                                                    ⏳ Sisa waktu {{ $selisih }} hari lagi
+                                                </small>
+                                            @elseif ($selisih == 1)
+                                                <small class="text-warning d-block">
+                                                    ⚠️ Sisa waktu 1 hari lagi segera kembalikan!
+                                                </small>
+                                            @elseif ($selisih == 0)
+                                                <small class="text-warning d-block">
+                                                    ⚠️ Hari ini batas terakhir! segera kembalikan!
+                                                </small>
+                                            @else
+                                                <small class="text-danger d-block">
+                                                    🚨 Terlambat {{ abs($selisih) }} hari
+                                                </small>
+                                            @endif
 
                                             @if ($selisih < 0)
                                                 <small class="text-danger d-block">
                                                     ⚠️ Harap segera dikembalikan untuk menghindari denda lebih besar
+                                                </small>
+                                            @endif
+                                            @if ($selisih <= 1 && $selisih >= 0)
+                                                <small class="text-warning d-block">
+                                                    ⚠️ Segera kembalikan agar tidak kena denda
                                                 </small>
                                             @endif
                                             <span>{{ $pinjam->buku->penulis ?? '-' }}</span>
@@ -149,6 +171,64 @@
                 </div><!--inner-content-->
             </div>
 
+
+        </div>
+    </section>
+    <section class="py-5">
+        <div class="container">
+
+            <div class="section-header align-center">
+                <div class="title">
+                    <span>Riwayat Peminjaman</span>
+                </div>
+                <h2 class="section-title">History Buku</h2>
+            </div>
+
+            <div class="row">
+                @forelse ($history as $item)
+                    <div class="col-md-3">
+                        <div class="product-item">
+                            <figure class="product-style">
+                                <img src="{{ asset('storage/' . $item->buku->cover) }}" class="product-item">
+                            </figure>
+
+                            <figcaption>
+                                <h3>{{ $item->buku->judul_buku }}</h3>
+                                <span>{{ $item->buku->penulis }}</span>
+
+                                <div class="mt-2">
+
+                                    @if ($item->status == 'dikembalikan')
+                                        @if ($item->pengembalian && $item->pengembalian->status == 'terlambat')
+                                            <span class="badge bg-danger">Terlambat</span>
+                                        @else
+                                            <span class="badge bg-success">Dikembalikan</span>
+                                        @endif
+                                    @elseif ($item->status == 'ditolak')
+                                        <span class="badge bg-warning text-dark">Ditolak</span>
+                                    @endif
+
+                                </div>
+
+                                <small class="d-block mt-1 text-muted">
+                                    Pinjam:
+                                    {{ \Carbon\Carbon::parse($item->tanggal_pinjam)->translatedFormat('d M Y') }}
+                                </small>
+
+                                <small class="d-block text-muted">
+                                    Kembali:
+                                    {{ optional($item->pengembalian)->tanggal_kembali
+                                        ? \Carbon\Carbon::parse(optional($item->pengembalian)->tanggal_kembali)->translatedFormat('d M Y')
+                                        : '-' }}
+                                </small>
+
+                            </figcaption>
+                        </div>
+                    </div>
+                @empty
+                    <p class="text-center">Belum ada riwayat peminjaman</p>
+                @endforelse
+            </div>
 
         </div>
     </section>

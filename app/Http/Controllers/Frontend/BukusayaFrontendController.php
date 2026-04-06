@@ -12,7 +12,7 @@ class BukusayaFrontendController extends Controller
  public function index()
 {
     if (!Auth::check()) {
-        return redirect('/loginuser'); // atau route login kamu
+        return redirect('/loginuser');
     }
 
     $anggota = Auth::user()->anggota;
@@ -21,12 +21,21 @@ class BukusayaFrontendController extends Controller
         return back()->with('error', 'Data anggota tidak ditemukan');
     }
 
+    // 📚 Buku yang masih dipinjam
     $peminjaman = $anggota
         ->peminjaman()
         ->where('status', 'dipinjam')
-        ->with('buku')
+        ->with('buku', 'pengembalian')
         ->get();
 
-    return view('page.frontend.bukusaya.index', compact('peminjaman'));
+    // 📜 History (SEMUA kecuali yang masih dipinjam)
+    $history = $anggota
+        ->peminjaman()
+        ->whereIn('status', ['dikembalikan', 'ditolak'])
+        ->with('buku', 'pengembalian')
+        ->latest()
+        ->get();
+
+    return view('page.frontend.bukusaya.index', compact('peminjaman', 'history'));
 }
 }
