@@ -32,7 +32,7 @@ Route::post('/login', [AuthControllerBackendController::class, 'prosesLogin'])->
 // 🔒 BACKEND - PETUGAS
 // ==============================
 //
-Route::middleware(['auth', 'role:petugas'])->group(function () {
+Route::middleware(['auth:admin', 'role:petugas'])->group(function () {
 
     Route::get('/adminpetugas', [DashboardPetugasBackendController::class, 'index']);
 
@@ -65,13 +65,13 @@ Route::get('/peminjaman/tolak/{id}', [PeminjamanBackendController::class, 'tolak
 // ==============================
 //
 
-Route::middleware(['auth', 'role:kepala,petugas'])->group(function () {
+Route::middleware(['auth:admin', 'role:kepala,petugas'])->group(function () {
 
     Route::get('/anggota', [AnggotaBackendController::class, 'index']);
     Route::get('/anggota/show/{id}', [AnggotaBackendController::class, 'show']);
 });
 
-Route::middleware(['auth', 'role:kepala'])->group(function () {
+Route::middleware(['auth:admin', 'role:kepala'])->group(function () {
 
     Route::get('/kepalaperpus', [DashboardKepalaPerpusBackendController::class, 'index']);
 

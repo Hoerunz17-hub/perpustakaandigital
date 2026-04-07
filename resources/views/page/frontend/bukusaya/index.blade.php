@@ -91,7 +91,7 @@
                                             <img src="{{ asset('storage/' . $pinjam->buku->cover) }}" alt="Books"
                                                 class="product-item">
                                             @if ($isPengembalianDitolak)
-                                                <button class="add-to-cart bg-secondary" disabled>
+                                                <button class="book-btn btn-danger" disabled>
                                                     Pengembalian Ditolak
                                                 </button>
                                             @elseif ($isPeminjamanDitolak)
@@ -115,7 +115,7 @@
 
                                             @if ($isPengembalianDitolak)
                                                 <small class="text-danger d-block">
-                                                    ⚠️ Pengembalian ditolak, tetap dalam status pinjam
+                                                    ⚠️ Pengembalian ditolak
                                                 </small>
                                             @else
                                                 @if ($selisih > 1)
@@ -179,10 +179,12 @@
                                                 @endif
 
                                             </div>
-                                            <small class="d-block mt-1 text-muted">
-                                                Wajib kembali:
-                                                {{ \Carbon\Carbon::parse($pinjam->wajib_kembali)->translatedFormat('d M Y') }}
-                                            </small>
+                                            @if (!$isPengembalianDitolak)
+                                                <small class="d-block mt-1 text-muted">
+                                                    Wajib kembali:
+                                                    {{ \Carbon\Carbon::parse($pinjam->wajib_kembali)->translatedFormat('d M Y') }}
+                                                </small>
+                                            @endif
                                         </figcaption>
                                     </div>
                                 </div>
@@ -229,16 +231,18 @@
 
                                 <div class="mt-2">
 
-                                    @if ($item->status == 'menunggu_pengembalian')
-                                        <span class="badge bg-info">Menunggu Konfirmasi</span>
-                                    @elseif ($item->status == 'ditolak')
-                                        <span class="badge bg-danger">Pengembalian Ditolak</span>
+                                    @if ($item->status == 'ditolak')
+                                        <span class="badge bg-dark">Peminjaman Ditolak</span>
                                     @elseif ($item->status == 'dikembalikan')
-                                        @if ($item->pengembalian && $item->pengembalian->status == 'terlambat')
+                                        @if ($item->pengembalian && $item->pengembalian->status == 'ditolak')
+                                            <span class="badge bg-danger">Pengembalian Ditolak</span>
+                                        @elseif ($item->pengembalian && $item->pengembalian->status == 'terlambat')
                                             <span class="badge bg-danger">Terlambat</span>
                                         @else
                                             <span class="badge bg-success">Dikembalikan</span>
                                         @endif
+                                    @elseif ($item->status == 'menunggu_pengembalian')
+                                        <span class="badge bg-info">Menunggu Konfirmasi</span>
                                     @endif
 
                                 </div>
@@ -265,6 +269,50 @@
         </div>
     </section>
     <style>
+        .book-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-top: 12px;
+
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+
+            border: none;
+            border-radius: 6px;
+
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        /* warna */
+        .book-btn.btn-danger {
+            background: #dc3545;
+            color: #fff;
+        }
+
+        .book-btn.btn-dark {
+            background: #212529;
+            color: #fff;
+        }
+
+        .book-btn.btn-warning {
+            background: #ffc107;
+            color: #000;
+        }
+
+        .book-btn.btn-primary {
+            background: #222;
+            color: #fff;
+        }
+
+        /* hover ala booksaw */
+        .book-btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
         .profile-card {
             background: #ffffff;
             border-radius: 16px;
