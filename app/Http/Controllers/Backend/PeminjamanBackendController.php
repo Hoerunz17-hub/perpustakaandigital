@@ -72,7 +72,7 @@ if (!$petugas) {
 }
 
     $peminjaman->update([
-    'status' => 'ditolak_peminjaman',
+    'status' => 'ditolak',
     'id_petugas' => $petugas->id_petugas
 ]);
 

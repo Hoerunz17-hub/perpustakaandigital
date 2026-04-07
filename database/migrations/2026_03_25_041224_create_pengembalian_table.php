@@ -20,7 +20,7 @@ return new class extends Migration
     $table->date('tanggal_kembali');
     $table->integer('denda')->default(0);
 
-     $table->enum('status', ['tepat_waktu', 'terlambat'])
+     $table->enum('status', ['tepat_waktu', 'terlambat', 'ditolak'])
           ->default('tepat_waktu');
 
     $table->timestamps();

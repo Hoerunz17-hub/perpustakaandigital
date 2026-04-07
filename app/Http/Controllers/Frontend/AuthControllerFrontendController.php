@@ -28,10 +28,10 @@ public function prosesLogin(Request $request)
         'password' => $request->password
     ];
 
-    if (Auth::attempt($credentials)) {
+    if (Auth::guard('web')->attempt($credentials)) {
 
         // cek role anggota
-        if (Auth::user()->role == 'anggota') {
+        if (Auth::guard('web')->user()->role == 'anggota') {
             return redirect('/')->with('success', 'Login berhasil');
         } else {
             Auth::logout();
@@ -44,7 +44,7 @@ public function prosesLogin(Request $request)
 
 public function logout()
 {
-    Auth::logout();
+    Auth::guard('web')->logout();
     return redirect('/')->with('success', 'Berhasil logout');
 }
      public function registrasi(){

@@ -24,11 +24,11 @@ class AuthControllerBackendController extends Controller
         $credentials = $request->only('username', 'password');
 
         // 🔥 COBA LOGIN
-        if (Auth::attempt($credentials)) {
+        if (Auth::guard('admin')->attempt($credentials)) {
 
             $request->session()->regenerate(); // penting banget
 
-            $user = Auth::user();
+            $user = Auth::guard('admin')->user();
 
             // 🔥 CEK ROLE
             if ($user->role == 'petugas') {
@@ -49,7 +49,7 @@ class AuthControllerBackendController extends Controller
 
     public function logout(Request $request)
 {
-    Auth::logout();
+  Auth::guard('admin')->logout();
 
     $request->session()->invalidate();
     $request->session()->regenerateToken();

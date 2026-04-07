@@ -16,11 +16,20 @@ class RoleMiddleware
      */
 public function handle($request, Closure $next, ...$roles)
 {
-    if (!Auth::check()) {
+    if (!Auth::guard('admin')->check()) {
         return redirect('/login');
     }
 
-    if (!in_array(Auth::user()->role, $roles)) {
+    $userRole = Auth::guard('admin')->user()->role;
+
+    // support banyak role (kepala,petugas)
+    $rolesArray = [];
+
+    foreach ($roles as $role) {
+        $rolesArray = array_merge($rolesArray, explode(',', $role));
+    }
+
+    if (!in_array($userRole, $rolesArray)) {
         abort(403);
     }
 
