@@ -89,7 +89,7 @@
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table" id="table1">
+                        <table class="table" id="table2">
                             <thead>
                                 <tr>
                                     <th class="text-nowrap">No</th>
@@ -194,6 +194,20 @@
     </section>
     </div>
     <style>
+        #tableBukuPopuler {
+            font-size: 14px;
+        }
+
+        #tableBukuPopuler thead {
+            background-color: #f8f9fa;
+        }
+
+        .dataTables_wrapper .dataTables_filter input {
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            padding: 5px 10px;
+        }
+
         #table1 th,
         #table1 td {
             vertical-align: middle !important;
@@ -207,6 +221,14 @@
         #table1 td:last-child {
             padding-top: 12px !important;
             padding-bottom: 12px !important;
+        }
+
+        #tableBukuPopuler thead {
+            background-color: transparent !important;
+        }
+
+        #tableBukuPopuler {
+            border: 1px solid #eee;
         }
     </style>
     <script>

@@ -23,10 +23,27 @@
 
         body {
             height: 100vh;
-            background: #f8f5f2;
+            position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f') no-repeat center/cover;
+            z-index: -2;
+        }
+
+        body::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            /* overlay */
+            z-index: -1;
         }
 
         .container {
@@ -36,6 +53,11 @@
             padding: 40px 35px;
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
             text-align: center;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(6px);
         }
 
         .logo {

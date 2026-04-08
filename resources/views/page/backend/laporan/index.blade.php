@@ -17,6 +17,42 @@
                 </div>
             </div>
         </div>
+        <form method="GET" action="{{ route('laporan.index') }}" class="mb-3">
+            <div class="row">
+                <div class="col-md-3">
+                    <select name="bulan" class="form-control">
+                        <option value="">-- Pilih Bulan --</option>
+                        @for ($i = 1; $i <= 12; $i++)
+                            <option value="{{ $i }}" {{ $bulan == $i ? 'selected' : '' }}>
+                                {{ DateTime::createFromFormat('!m', $i)->format('F') }}
+                            </option>
+                        @endfor
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <select name="tahun" class="form-control">
+                        <option value="">-- Pilih Tahun --</option>
+                        @for ($i = date('Y'); $i >= 2020; $i--)
+                            <option value="{{ $i }}" {{ $tahun == $i ? 'selected' : '' }}>
+                                {{ $i }}
+                            </option>
+                        @endfor
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <button class="btn btn-primary">Filter</button>
+                </div>
+
+                <div class="col-md-3 text-end">
+                    <a href="{{ route('laporan.cetak', ['bulan' => $bulan, 'tahun' => $tahun]) }}" target="_blank"
+                        class="btn btn-success">
+                        🖨 Cetak PDF
+                    </a>
+                </div>
+            </div>
+        </form>
 
         <section class="section">
             <div class="card">
@@ -25,10 +61,11 @@
                         <div>
                             Table Laporan
                         </div>
-                        <a href="#" class="btn btn-primary d-flex align-items-center justify-content-center"
-                            style="padding:6px 12px;">
+                        <a href="{{ route('laporan.cetak', ['bulan' => request('bulan'), 'tahun' => request('tahun')]) }}"
+                            target="_blank" class="btn btn-primary">
                             <iconify-icon icon="mdi:printer" width="20" height="20"></iconify-icon>
                         </a>
+
                     </h5>
 
                 </div>
@@ -41,27 +78,59 @@
                                     <th class="text-nowrap">Nama</th>
                                     <th class="text-nowrap">Buku Dipinjam</th>
                                     <th class="text-nowrap">Tanggal Pinjam</th>
+                                    <th class="text-nowrap">Wajib Kembali</th>
                                     <th class="text-nowrap">Tanggal Kembali</th>
                                     <th class="text-nowrap">Status</th>
                                     <th class="text-nowrap">Denda</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td class="text-nowrap">1</td>
-                                    <td class="text-nowrap">Foto</td>
-                                    <td class="text-nowrap">17-05026</td>
-                                    <td class="text-nowrap"> tere liye</td>
-                                    <td class="text-nowrap"> 0182</td>
-                                    <td class="text-nowrap">
-                                        <span class="badge bg-light-danger">Terlambat</span>
-                                    </td>
-                                    <td class="text-nowrap">
-                                        Rp 3000
-                                    </td>
-                                </tr>
+                                @foreach ($data as $item)
+                                    <tr>
+                                        <td>{{ $loop->iteration }}</td>
 
+                                        <td>{{ $item->anggota->nama_anggota ?? '-' }}</td>
+                                        <td>{{ $item->buku->judul_buku ?? '-' }}</td>
+                                        {{-- Tanggal Pinjam --}}
+                                        <td>
+                                            {{ \Carbon\Carbon::parse($item->tanggal_pinjam)->format('d F Y') }}
+                                        </td>
+                                        {{-- Wajib Kembali --}}
+                                        <td>
+                                            {{ $item->wajib_kembali ? \Carbon\Carbon::parse($item->wajib_kembali)->format('d F Y') : '-' }}
+                                        </td>
+                                        {{-- Tanggal Kembali --}}
+                                        <td>
+                                            {{ $item->pengembalian && $item->pengembalian->tanggal_kembali
+                                                ? \Carbon\Carbon::parse($item->pengembalian->tanggal_kembali)->format('d F Y')
+                                                : '-' }}
+                                        </td>
 
+                                        <td>
+                                            @php
+                                                $status = $item->status_final;
+                                            @endphp
+
+                                            @if ($status == 'dipinjam')
+                                                <span class="badge bg-light-primary">Dipinjam</span>
+                                            @elseif($status == 'menunggu')
+                                                <span class="badge bg-light-warning">Menunggu</span>
+                                            @elseif($status == 'terlambat')
+                                                <span class="badge bg-light-danger">Terlambat</span>
+                                            @elseif($status == 'dikembalikan')
+                                                <span class="badge bg-light-success">Dikembalikan</span>
+                                            @elseif($status == 'ditolak')
+                                                <span class="badge bg-light-secondary">Ditolak</span>
+                                            @else
+                                                <span class="badge bg-dark">{{ ucfirst($status) }}</span>
+                                            @endif
+                                        </td>
+
+                                        <td>
+                                            Rp {{ number_format(optional($item->pengembalian)->denda ?? 0, 0, ',', '.') }}
+                                        </td>
+                                    </tr>
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
