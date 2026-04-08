@@ -47,7 +47,7 @@
 
                 {{-- DASHBOARD PETUGAS --}}
                 @if (auth()->user()->role == 'petugas')
-                    <li class="sidebar-item {{ request()->is('adminpetugas*') ? 'active' : '' }}">
+                    <li class="sidebar-item {{ request()->is(['adminpetugas*', 'profile*']) ? 'active' : '' }}">
                         <a href="/adminpetugas" class="sidebar-link">
                             <i class="bi bi-grid-fill"></i>
                             <span>Dashboard Petugas</span>

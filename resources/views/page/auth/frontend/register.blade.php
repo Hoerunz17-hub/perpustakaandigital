@@ -22,11 +22,15 @@
 
         body {
             min-height: 100vh;
-            background: #f8f5f2;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0;
+            padding: 20px;
+
+            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+                url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f');
+            background-size: cover;
+            background-position: center;
         }
 
         .wrapper {
@@ -40,6 +44,11 @@
             border-radius: 16px;
             padding: 35px 30px;
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(4px);
         }
 
         .logo {

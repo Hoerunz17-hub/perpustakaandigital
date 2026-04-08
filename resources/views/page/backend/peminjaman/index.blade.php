@@ -120,8 +120,9 @@
                                                         </a>
                                                     </li>
                                                     <li>
-                                                        <a class="dropdown-item d-flex align-items-center gap-2 text-danger"
-                                                            href="#">
+                                                        <a href="#"
+                                                            class="dropdown-item d-flex align-items-center gap-2 text-danger btn-delete"
+                                                            data-id="{{ $pinjams->id_peminjaman }}">
                                                             <i class="fas fa-trash"></i>
                                                             <span>Delete</span>
                                                         </a>
@@ -231,6 +232,31 @@
                     }
                 });
             }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.querySelectorAll('.btn-delete').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                let id = this.getAttribute('data-id');
+
+                Swal.fire({
+                    title: 'Yakin hapus?',
+                    text: "Data tidak bisa dikembalikan!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#435ebe',
+                    cancelButtonColor: '#dc3545',
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = `/peminjaman/delete/${id}`;
+                    }
+                });
+            });
         });
     </script>
 @endsection

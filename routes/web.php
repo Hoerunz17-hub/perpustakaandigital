@@ -1,8 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-
-// Backend Controllers
 use App\Http\Controllers\Backend\AnggotaBackendController;
 use App\Http\Controllers\Backend\AuthControllerBackendController;
 use App\Http\Controllers\Backend\BukuBackendController;
@@ -11,13 +8,13 @@ use App\Http\Controllers\Backend\DashboardPetugasBackendController;
 use App\Http\Controllers\Backend\laporanBackendController;
 use App\Http\Controllers\Backend\PeminjamanBackendController;
 use App\Http\Controllers\Backend\PetugasBackendController;
-
-// Frontend Controllers
+use App\Http\Controllers\Backend\ProfileanggotaBackendController;
 use App\Http\Controllers\Frontend\AuthControllerFrontendController;
 use App\Http\Controllers\Frontend\BukusayaFrontendController;
 use App\Http\Controllers\Frontend\HomeFrontendController;
 use App\Http\Controllers\Frontend\PeminjamanFrontendController;
 use App\Http\Controllers\Frontend\PengembalianFrontendController;
+use Illuminate\Support\Facades\Route;
 
 //
 // ==============================
@@ -45,6 +42,7 @@ Route::middleware(['auth:admin', 'role:petugas'])->group(function () {
     Route::get('/buku/delete/{id}', [BukuBackendController::class, 'destroy']);
     Route::get('/petugas/buku/show/{id}', [BukuBackendController::class, 'show']);
     Route::post('/buku/update-status/{id}', [BukuBackendController::class, 'updateStatus']);
+    Route::get('/profile', [ProfileanggotaBackendController::class, 'index'])->name('profile');
     // Peminjaman
     Route::get('/petugas/peminjaman', [PeminjamanBackendController::class, 'index']);
    Route::get('/peminjaman/acc/{id}', [PeminjamanBackendController::class, 'acc'])
@@ -55,6 +53,8 @@ Route::middleware(['auth:admin', 'role:petugas'])->group(function () {
     ->name('peminjaman.konfirmasiKembali');
     Route::get('/peminjaman/tolak-kembali/{id}', [PeminjamanBackendController::class, 'tolakKembali'])
     ->name('peminjaman.tolakKembali');
+    Route::get('/peminjaman/delete/{id}', [PeminjamanBackendController::class, 'destroy'])
+    ->name('peminjaman.delete');
 
 Route::get('/peminjaman/tolak/{id}', [PeminjamanBackendController::class, 'tolak'])
     ->name('peminjaman.tolak');
@@ -82,7 +82,8 @@ Route::middleware(['auth:admin', 'role:kepala'])->group(function () {
     Route::post('/petugas/update/{id}', [PetugasBackendController::class, 'update']);
     Route::get('/petugas/delete/{id}', [PetugasBackendController::class, 'destroy']);
     Route::post('/petugas/update-status/{id}', [PetugasBackendController::class, 'updateStatus']);
-    Route::get('/laporan', [laporanBackendController::class, 'index']);
+   Route::get('/laporan', [laporanBackendController::class, 'index'])->name('laporan.index');
+Route::get('/laporan/cetak', [laporanBackendController::class, 'cetak'])->name('laporan.cetak');
 });
 
 //

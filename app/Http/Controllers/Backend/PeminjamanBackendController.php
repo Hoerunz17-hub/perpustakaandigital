@@ -135,4 +135,18 @@ public function show($id)
 
     return view('page.backend.peminjaman.detail', compact('peminjaman'));
 }
+
+public function destroy($id)
+{
+    $peminjaman = Peminjaman::findOrFail($id);
+
+    // optional: validasi biar aman
+    if ($peminjaman->status == 'dipinjam') {
+        return back()->with('error', 'Tidak bisa hapus, masih dipinjam!');
+    }
+
+    $peminjaman->delete();
+
+    return back()->with('success', 'Data berhasil dihapus');
+}
 }
