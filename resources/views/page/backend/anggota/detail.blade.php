@@ -119,13 +119,21 @@
                                                 </td>
 
                                                 <td>
-                                                    {{ \Carbon\Carbon::parse($anggotas->wajib_kembali)->format('d-m-Y') }}
+                                                    @if ($anggotas->status == 'ditolak' || !$anggotas->wajib_kembali)
+                                                        -
+                                                    @else
+                                                        {{ \Carbon\Carbon::parse($anggotas->wajib_kembali)->format('d-m-Y') }}
+                                                    @endif
                                                 </td>
 
                                                 <td>
-                                                    {{ optional($anggotas->pengembalian)->tanggal_kembali
-                                                        ? \Carbon\Carbon::parse(optional($anggotas->pengembalian)->tanggal_kembali)->format('d-m-Y')
-                                                        : '-' }}
+                                                    @if ($anggotas->status == 'ditolak')
+                                                        -
+                                                    @else
+                                                        {{ optional($anggotas->pengembalian)->tanggal_kembali
+                                                            ? \Carbon\Carbon::parse(optional($anggotas->pengembalian)->tanggal_kembali)->format('d-m-Y')
+                                                            : '-' }}
+                                                    @endif
                                                 </td>
 
                                                 <td>
@@ -147,9 +155,13 @@
                                                 </td>
 
                                                 <td>
-                                                    {{ optional($anggotas->pengembalian)->denda
-                                                        ? 'Rp ' . number_format(optional($anggotas->pengembalian)->denda, 0, ',', '.')
-                                                        : '-' }}
+                                                    @if ($anggotas->status == 'ditolak')
+                                                        -
+                                                    @else
+                                                        {{ optional($anggotas->pengembalian)->denda
+                                                            ? 'Rp ' . number_format(optional($anggotas->pengembalian)->denda, 0, ',', '.')
+                                                            : '-' }}
+                                                    @endif
                                                 </td>
                                             </tr>
                                         @empty

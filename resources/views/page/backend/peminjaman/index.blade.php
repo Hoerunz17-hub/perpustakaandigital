@@ -52,18 +52,30 @@
                                             {{ \Carbon\Carbon::parse($pinjams->tanggal_pinjam)->translatedFormat('d F Y') }}
                                         </td>
                                         <td class="text-nowrap">
-                                            {{ \Carbon\Carbon::parse($pinjams->wajib_kembali)->translatedFormat('d F Y') }}
+                                            @if ($pinjams->status == 'ditolak' || !$pinjams->wajib_kembali)
+                                                -
+                                            @else
+                                                {{ \Carbon\Carbon::parse($pinjams->wajib_kembali)->translatedFormat('d F Y') }}
+                                            @endif
                                         </td>
                                         <td>
-                                            {{ optional($pinjams->pengembalian)->tanggal_kembali
-                                                ? \Carbon\Carbon::parse(optional($pinjams->pengembalian)->tanggal_kembali)->translatedFormat('d F Y')
-                                                : '-' }}
+                                            @if ($pinjams->status == 'ditolak')
+                                                -
+                                            @else
+                                                {{ optional($pinjams->pengembalian)->tanggal_kembali
+                                                    ? \Carbon\Carbon::parse(optional($pinjams->pengembalian)->tanggal_kembali)->translatedFormat('d F Y')
+                                                    : '-' }}
+                                            @endif
                                         </td>
 
                                         <td>
-                                            {{ optional($pinjams->pengembalian)->denda
-                                                ? 'Rp ' . number_format(optional($pinjams->pengembalian)->denda, 0, ',', '.')
-                                                : '-' }}
+                                            @if ($pinjams->status == 'ditolak')
+                                                -
+                                            @else
+                                                {{ optional($pinjams->pengembalian)->denda
+                                                    ? 'Rp ' . number_format(optional($pinjams->pengembalian)->denda, 0, ',', '.')
+                                                    : '-' }}
+                                            @endif
                                         </td>
                                         <td class="text-nowrap">
                                             @php

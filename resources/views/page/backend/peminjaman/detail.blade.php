@@ -64,7 +64,12 @@
                                           <div class="fw-semibold fs-5">
                                               {{ $peminjaman->anggota->nama_anggota ?? '-' }}
                                           </div>
+                                          <small class="text-muted d-block">Email</small>
+                                          <div class="fw-semibold fs-5">
+                                              {{ $peminjaman->anggota->email ?? '-' }}
+                                          </div>
                                       </div>
+
 
                                       <div class="col-md-6">
                                           <small class="text-muted d-block">Status</small>
@@ -109,7 +114,7 @@
 
                               {{-- ACTION --}}
                               <div class="col-md-3 text-md-end mt-3 mt-md-0">
-
+                                  {{-- ✅ KONFIRMASI PEMINJAMAN --}}
                                   @if ($peminjaman->status == 'menunggu')
                                       <div class="d-flex justify-content-md-end gap-2">
 
@@ -125,7 +130,22 @@
 
                                       </div>
                                   @endif
+                                  {{-- 🔁 KONFIRMASI PENGEMBALIAN --}}
+                                  @if ($peminjaman->status == 'menunggu_pengembalian')
+                                      <div class="d-flex justify-content-md-end gap-2">
 
+                                          <a href="{{ route('peminjaman.konfirmasiKembali', $peminjaman->id_peminjaman) }}"
+                                              class="btn btn-primary btn-sm">
+                                              Konfirmasi
+                                          </a>
+
+                                          <a href="{{ route('peminjaman.tolakKembali', $peminjaman->id_peminjaman) }}"
+                                              class="btn btn-outline-danger btn-sm">
+                                              Tolak
+                                          </a>
+
+                                      </div>
+                                  @endif
                               </div>
 
                           </div>
