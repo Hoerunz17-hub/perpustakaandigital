@@ -22,8 +22,7 @@
                     <ul class="tabs">
                         <li class="tab active" data-kategori="all">Semua Buku</li>
                         <li class="tab" data-kategori="fiksi">fiksi</li>
-                        <li class="tab" data-kategori="kuliner">kuliner</li>
-                        <li class="tab" data-kategori="agama">agama</li>
+                        <li class="tab" data-kategori="romance">romance</li>
                         <li class="tab" data-kategori="action">action</li>
                         <li class="tab" data-kategori="pendidikan">Pendidikan</li>
                         <li class="tab" data-kategori="sejarah">sejarah</li>

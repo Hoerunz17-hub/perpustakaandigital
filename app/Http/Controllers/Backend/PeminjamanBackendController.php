@@ -22,6 +22,11 @@ class PeminjamanBackendController extends Controller
 
     $peminjaman = Peminjaman::findOrFail($id);
 
+        if ($peminjaman->status !== 'menunggu') {
+        return back()->with('error', 'Peminjaman sudah diproses!');
+    }
+
+
     $buku = Buku::find($peminjaman->id_buku);
     if (!$buku) {
         return back()->with('error', 'Data buku tidak ditemukan!');
@@ -58,7 +63,9 @@ class PeminjamanBackendController extends Controller
 public function tolak($id)
 {
     $peminjaman = Peminjaman::findOrFail($id);
-
+      if ($peminjaman->status !== 'menunggu') {
+        return back()->with('error', 'Peminjaman sudah diproses!');
+    }
  $user = Auth::user();
 
 if (!$user) {
@@ -74,6 +81,7 @@ if (!$petugas) {
     $peminjaman->update([
     'status' => 'ditolak',
     'id_petugas' => $petugas->id_petugas
+
 ]);
 
     return back()->with('success', 'Peminjaman ditolak');

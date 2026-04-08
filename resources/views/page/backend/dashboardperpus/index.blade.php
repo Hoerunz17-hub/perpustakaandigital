@@ -84,7 +84,7 @@
             <div class="card">
                 <div class="card-header">
                     <h5 class="card-title">
-                        Table Keterlambatan
+                        Buku Populer
                     </h5>
                 </div>
                 <div class="card-body">
@@ -92,49 +92,29 @@
                         <table class="table" id="table1">
                             <thead>
                                 <tr>
-                                    <th class="text-nowrap">Nama</th>
+                                    <th class="text-nowrap">No</th>
                                     <th class="text-nowrap">Buku</th>
+                                    <th class="text-nowrap">Penulis</th>
                                     <th class="text-nowrap">Kode Buku</th>
-                                    <th class="text-nowrap">Wajib Kembali</th>
-                                    <th class="text-nowrap">Tanggal Kembali</th>
-                                    <th class="text-nowrap">Terlambat</th>
-                                    <th class="text-nowrap">Denda</th>
+                                    <th class="text-nowrap">Total Pinjam</th>
+
 
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse ($keterlambatan as $item)
+                                @forelse ($bukuPopuler as $bukus => $buku)
                                     <tr>
+                                        <td>{{ $buku->id_buku }}</td>
+                                        <td>{{ $buku->judul_buku }}</td>
+                                        <td>{{ $buku->penulis }}</td>
+                                        <td>{{ $buku->kode_buku }}</td>
                                         <td>
-                                            {{ $item->peminjaman->anggota->nama_anggota ?? '-' }}
-                                        </td>
-                                        <td>
-                                            {{ $item->peminjaman->buku->judul_buku ?? '-' }}
-                                        </td>
-                                        <td>
-                                            {{ $item->peminjaman->buku->kode_buku ?? '-' }}
-                                        </td>
-
-                                        <td>
-                                            {{ \Carbon\Carbon::parse($item->peminjaman->wajib_kembali)->format('d-m-Y') }}
+                                            <span class="badge bg-success">
+                                                {{ $buku->total_pinjam }}x
+                                            </span>
                                         </td>
 
-                                        <td>
-                                            {{ $item->tanggal_kembali ? \Carbon\Carbon::parse($item->tanggal_kembali)->format('d-m-Y') : '-' }}
-                                        </td>
 
-                                        <td>
-                                            @php
-                                                $telat = \Carbon\Carbon::parse(
-                                                    $item->peminjaman->wajib_kembali,
-                                                )->diffInDays(\Carbon\Carbon::parse($item->tanggal_kembali), false);
-                                            @endphp
-                                            {{ $telat > 0 ? $telat . ' hari' : '-' }}
-                                        </td>
-
-                                        <td>
-                                            {{ $item->denda ? 'Rp ' . number_format($item->denda, 0, ',', '.') : '-' }}
-                                        </td>
                                     </tr>
                                 @empty
                                 @endforelse
@@ -143,8 +123,75 @@
                     </div>
                 </div>
             </div>
-
         </section>
+
+
+    </div>
+    <section class="section">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">
+                    Table Keterlambatan
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table" id="table1">
+                        <thead>
+                            <tr>
+                                <th class="text-nowrap">Nama</th>
+                                <th class="text-nowrap">Buku</th>
+                                <th class="text-nowrap">Kode Buku</th>
+                                <th class="text-nowrap">Wajib Kembali</th>
+                                <th class="text-nowrap">Tanggal Kembali</th>
+                                <th class="text-nowrap">Terlambat</th>
+                                <th class="text-nowrap">Denda</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($keterlambatan as $item)
+                                <tr>
+                                    <td>
+                                        {{ $item->peminjaman->anggota->nama_anggota ?? '-' }}
+                                    </td>
+                                    <td>
+                                        {{ $item->peminjaman->buku->judul_buku ?? '-' }}
+                                    </td>
+                                    <td>
+                                        {{ $item->peminjaman->buku->kode_buku ?? '-' }}
+                                    </td>
+
+                                    <td>
+                                        {{ \Carbon\Carbon::parse($item->peminjaman->wajib_kembali)->format('d-m-Y') }}
+                                    </td>
+
+                                    <td>
+                                        {{ $item->tanggal_kembali ? \Carbon\Carbon::parse($item->tanggal_kembali)->format('d-m-Y') : '-' }}
+                                    </td>
+
+                                    <td>
+                                        @php
+                                            $telat = \Carbon\Carbon::parse(
+                                                $item->peminjaman->wajib_kembali,
+                                            )->diffInDays(\Carbon\Carbon::parse($item->tanggal_kembali), false);
+                                        @endphp
+                                        {{ $telat > 0 ? $telat . ' hari' : '-' }}
+                                    </td>
+
+                                    <td>
+                                        {{ $item->denda ? 'Rp ' . number_format($item->denda, 0, ',', '.') : '-' }}
+                                    </td>
+                                </tr>
+                            @empty
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </section>
     </div>
     <style>
         #table1 th,
