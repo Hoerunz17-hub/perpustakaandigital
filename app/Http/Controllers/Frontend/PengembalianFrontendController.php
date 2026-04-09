@@ -65,7 +65,7 @@ $peminjaman = Peminjaman::where('id_buku', $request->id_buku)
         }
 
         $wajib = Carbon::parse($peminjaman->wajib_kembali);
-        $kembali = Carbon::parse($request->tanggal_kembali);
+        $kembali = Carbon::today();
 
         $selisih = $kembali->diffInDays($wajib, false);
 

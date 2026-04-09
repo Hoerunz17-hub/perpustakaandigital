@@ -53,21 +53,19 @@ class PeminjamanBackendController extends Controller
    DB::transaction(function () use ($peminjaman, $buku, $petugas) {
 
     // 🔥 ambil waktu saat ACC
-    $tanggalAcc = Carbon::now();
+   $tanggalAcc = Carbon::now();
 
-    // 📚 lama pinjam (misal 3 hari)
-    $lama = 3;
+// 📚 lama pinjam 7 hari
+$lama = 7;
 
-    $peminjaman->update([
-        'status' => 'dipinjam',
-        'id_petugas' => $petugas->id_petugas,
+$peminjaman->update([
+    'status' => 'dipinjam',
+    'id_petugas' => $petugas->id_petugas,
 
-        // ✅ set tanggal pinjam saat ACC
-        'tanggal_pinjam' => $tanggalAcc,
+    'tanggal_pinjam' => $tanggalAcc,
 
-        // ✅ hitung wajib kembali dari ACC
-        'wajib_kembali' => $tanggalAcc->copy()->addDays($lama),
-    ]);
+    'wajib_kembali' => $tanggalAcc->copy()->addDays($lama),
+]);
 
     // 🔽 kurangi stok
     $buku->decrement('stock');

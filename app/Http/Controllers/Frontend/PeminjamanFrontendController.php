@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\Controller;
 use App\Models\Buku;
 use App\Models\Peminjaman;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -56,16 +57,19 @@ public function store(Request $request)
             return back()->with('error', 'Stok buku habis');
         }
 
-        // SIMPAN PEMINJAMAN
-        Peminjaman::create([
-            'id_petugas' => null,
-            'id_buku' => $request->id_buku,
-            'id_anggota' => $anggotaId,
-            'tanggal_pinjam' => $request->tanggal_pinjam,
-            'wajib_kembali' => $request->wajib_kembali,
-            'status' => 'menunggu'
-        ]);
+       // 🔥 HITUNG DI BACKEND (AMAN)
+$tanggalPinjam = Carbon::today();
+$wajibKembali = Carbon::today()->addDays(7);
 
+// SIMPAN PEMINJAMAN
+Peminjaman::create([
+    'id_petugas' => null,
+    'id_buku' => $request->id_buku,
+    'id_anggota' => $anggotaId,
+    'tanggal_pinjam' => $tanggalPinjam,
+    'wajib_kembali' => $wajibKembali,
+    'status' => 'menunggu'
+]);
        DB::commit();
 
         return redirect('/anggota/peminjaman')->with('success', 'Pengajuan peminjaman berhasil, tunggu konfirmasi petugas');
