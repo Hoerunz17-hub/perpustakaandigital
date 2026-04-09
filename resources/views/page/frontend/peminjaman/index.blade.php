@@ -88,7 +88,7 @@
                                 <input type="hidden" name="wajib_kembali" id="wajib_kembali">
                             </div>
                             <div id="note_peminjaman" class="alert alert-info d-none mt-2">
-                                📌 Buku harus dikembalikan maksimal <b>3 hari</b><br>
+                                📌 Buku harus dikembalikan maksimal <b>7 hari</b><br>
                                 📌 Keterlambatan akan dikenakan denda
                             </div>
 
@@ -231,7 +231,7 @@
                     document.getElementById('tanggal_pinjam').value = tanggalPinjam;
 
                     let kembali = new Date();
-                    kembali.setDate(today.getDate() + 3);
+                    kembali.setDate(today.getDate() + 7);
 
                     let wajibKembali = formatDate(kembali);
 
@@ -273,7 +273,7 @@
                 document.getElementById('tanggal_pinjam').value = tanggalPinjam;
 
                 let kembali = new Date();
-                kembali.setDate(today.getDate() + 3);
+                kembali.setDate(today.getDate() + 7);
 
                 let wajibKembali = formatDate(kembali);
 
