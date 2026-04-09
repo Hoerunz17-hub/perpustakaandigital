@@ -116,7 +116,7 @@
                 <td>: {{ \Carbon\Carbon::now()->format('d F Y') }}</td>
             </tr>
             <tr>
-                <td>Petugas</td>
+                <td>Di print oleh</td>
                 <td>: Kepala Perpustakaan</td>
             </tr>
         </table>
