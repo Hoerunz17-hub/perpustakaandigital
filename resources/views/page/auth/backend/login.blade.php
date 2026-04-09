@@ -52,7 +52,7 @@
                                 alt="Logo"></a>
                     </div>
                     <h1 class="auth-title">Log in.</h1>
-                    <p class="auth-subtitle mb-5">Log in Terlebih Dahulu Yak Sahabat.</p>
+                    <p class="auth-subtitle mb-5">Login Dulu Baru Pintar</p>
 
                     <form action="{{ route('login.proses') }}" method="POST">
                         @csrf

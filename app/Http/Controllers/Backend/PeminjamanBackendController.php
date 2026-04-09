@@ -8,6 +8,7 @@ use App\Models\Peminjaman;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class PeminjamanBackendController extends Controller
 {
@@ -49,14 +50,28 @@ class PeminjamanBackendController extends Controller
         return back()->with('error', 'Data petugas tidak ditemukan!');
     }
 
-    DB::transaction(function () use ($peminjaman, $buku, $petugas) {
-        $peminjaman->update([
-            'status' => 'dipinjam',
-            'id_petugas' => $petugas->id_petugas
-        ]);
+   DB::transaction(function () use ($peminjaman, $buku, $petugas) {
 
-        $buku->decrement('stock');
-    });
+    // 🔥 ambil waktu saat ACC
+    $tanggalAcc = Carbon::now();
+
+    // 📚 lama pinjam (misal 3 hari)
+    $lama = 3;
+
+    $peminjaman->update([
+        'status' => 'dipinjam',
+        'id_petugas' => $petugas->id_petugas,
+
+        // ✅ set tanggal pinjam saat ACC
+        'tanggal_pinjam' => $tanggalAcc,
+
+        // ✅ hitung wajib kembali dari ACC
+        'wajib_kembali' => $tanggalAcc->copy()->addDays($lama),
+    ]);
+
+    // 🔽 kurangi stok
+    $buku->decrement('stock');
+});
 
     return back()->with('success', 'Peminjaman disetujui');
 }
