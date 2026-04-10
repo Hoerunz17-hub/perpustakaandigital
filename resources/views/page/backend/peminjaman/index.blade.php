@@ -55,26 +55,33 @@
                                             {{ \Carbon\Carbon::parse($pinjams->wajib_kembali)->translatedFormat('d F Y') }}
                                         </td>
                                         <td>
-                                            {{ $pinjams->pengembalian->tanggal_kembali
-                                                ? \Carbon\Carbon::parse($pinjams->pengembalian->tanggal_kembali)->translatedFormat('d F Y')
+                                            {{ optional($pinjams->pengembalian)->tanggal_kembali
+                                                ? \Carbon\Carbon::parse(optional($pinjams->pengembalian)->tanggal_kembali)->translatedFormat('d F Y')
                                                 : '-' }}
                                         </td>
 
                                         <td>
-                                            {{ $pinjams->pengembalian->denda ? 'Rp ' . number_format($pinjams->pengembalian->denda, 0, ',', '.') : '-' }}
+                                            {{ optional($pinjams->pengembalian)->denda
+                                                ? 'Rp ' . number_format(optional($pinjams->pengembalian)->denda, 0, ',', '.')
+                                                : '-' }}
                                         </td>
                                         <td class="text-nowrap">
+                                            @php
+                                                $pengembalian = $pinjams->pengembalian;
+                                            @endphp
+
                                             @if ($pinjams->status == 'menunggu')
-                                                <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
-                                                    data-bs-target="#modalKonfirmasi{{ $pinjams->id_peminjaman }}">
-                                                    Konfirmasi
-                                                </button>
+                                                <button class="btn btn-sm btn-warning">Konfirmasi</button>
                                             @elseif ($pinjams->status == 'dipinjam')
                                                 <span class="badge bg-primary">Dipinjam</span>
                                             @elseif ($pinjams->status == 'ditolak')
-                                                <span class="badge bg-danger">Ditolak</span>
+                                                <span class="badge bg-warning text-dark">Ditolak</span>
                                             @elseif ($pinjams->status == 'dikembalikan')
-                                                <span class="badge bg-success">Dikembalikan</span>
+                                                @if ($pengembalian && $pengembalian->status == 'terlambat')
+                                                    <span class="badge bg-danger">Terlambat</span>
+                                                @else
+                                                    <span class="badge bg-success">Dikembalikan</span>
+                                                @endif
                                             @endif
                                         </td>
                                         <td class="text-center align-middle action-column">

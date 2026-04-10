@@ -41,23 +41,29 @@
                                     @endphp
 
                                     <input type="text" class="form-control"
-                                        value="{{ $selectedBook ? $selectedBook->judul_buku : 'Buku tidak ditemukan' }}"
+                                        value="{{ $selectedBook ? $selectedBook->judul_buku : 'Kamu belum meminjam buku' }}"
                                         readonly>
                                     <small class="text-muted">Buku sudah dipilih dari halaman sebelumnya</small>
                                 @else
                                     {{-- MODE MANUAL (DROP DOWN) --}}
-                                    <select name="id_buku" id="pilih_buku" onchange="filterBuku(this.value)"
-                                        class="form-control" required @guest onclick="confirmLogin()" disabled @endguest>
+                                    @if ($buku->isEmpty())
+                                        <div class="alert alert-warning">
+                                            Kamu tidak sedang meminjam buku
+                                        </div>
+                                    @else
+                                        <select name="id_buku" id="pilih_buku" onchange="filterBuku(this.value)"
+                                            class="form-control" required>
 
-                                        <option value="">-- Pilih Buku --</option>
+                                            <option value="">-- Pilih Buku --</option>
 
-                                        @foreach ($buku as $item)
-                                            <option value="{{ $item->id_buku }}">
-                                                {{ $item->judul_buku }}
-                                            </option>
-                                        @endforeach
+                                            @foreach ($buku as $item)
+                                                <option value="{{ $item->id_buku }}">
+                                                    {{ $item->judul_buku }}
+                                                </option>
+                                            @endforeach
 
-                                    </select>
+                                        </select>
+                                    @endif
                                 @endif
                             </div>
 
@@ -68,10 +74,10 @@
                             <div class="mb-4">
                                 <label class="form-label">Tanggal Wajib Kembali</label>
                                 <input type="hidden" name="wajib_kembali" id="wajib_kembali"
-                                    value="{{ $peminjaman ? \Carbon\Carbon::parse($peminjaman->wajib_kembali)->format('Y-m-d') : '' }}">
+                                    value="{{ $detailPinjam ? \Carbon\Carbon::parse($detailPinjam->wajib_kembali)->format('Y-m-d') : '' }}">
 
                                 <input type="date" class="form-control" id="wajib_kembali_view"
-                                    value="{{ $peminjaman ? \Carbon\Carbon::parse($peminjaman->wajib_kembali)->format('Y-m-d') : '' }}"
+                                    value="{{ $detailPinjam ? \Carbon\Carbon::parse($detailPinjam->wajib_kembali)->format('Y-m-d') : '' }}"
                                     readonly>
                             </div>
                             <!-- Tanggal Kembali (otomatis hari ini) -->
@@ -82,17 +88,24 @@
                             </div>
 
                             <!-- Status -->
-                            <div class="mb-3">
-                                <label class="form-label">Status Pengembalian</label>
-                                <input type="text" class="form-control" id="status_pengembalian" readonly>
-                            </div>
+                            <div id="hasil_pengembalian" style="display: none;">
 
-                            <!-- Denda -->
-                            <div class="mb-3">
-                                <label class="form-label">Denda</label>
-                                <input type="number" class="form-control" id="denda" name="denda" readonly>
-                            </div>
+                                <!-- Status -->
+                                <div class="mb-3">
+                                    <label class="form-label">Status Pengembalian</label>
+                                    <input type="text" class="form-control" id="status_pengembalian" readonly>
+                                </div>
 
+                                <!-- Denda -->
+                                <div class="mb-3">
+                                    <label class="form-label">Denda</label>
+                                    <input type="text" class="form-control" id="denda" name="denda" readonly>
+                                </div>
+
+                                <!-- NOTE -->
+                                <small id="note_denda"></small>
+
+                            </div>
 
                             <!-- Button -->
                             <div class="d-flex gap-2">
@@ -199,44 +212,60 @@
     <script>
         document.addEventListener("DOMContentLoaded", function() {
 
-            // set tanggal kembali = hari ini
             let today = new Date().toISOString().split('T')[0];
             document.getElementById("tanggal_kembali").value = today;
 
-            // ambil tanggal wajib kembali
             let wajibInput = document.getElementById("wajib_kembali");
+            let hasilDiv = document.getElementById("hasil_pengembalian");
 
-            wajibInput.addEventListener("change", hitungDenda);
+            let dendaInput = document.getElementById("denda");
+            let statusInput = document.getElementById("status_pengembalian");
+            let note = document.getElementById("note_denda");
 
             function hitungDenda() {
+                if (!wajibInput.value) return;
+
+                let today = new Date().toISOString().split('T')[0];
+
                 let wajib = new Date(wajibInput.value);
                 let kembali = new Date(today);
 
                 let selisihHari = Math.floor((kembali - wajib) / (1000 * 60 * 60 * 24));
 
-                let dendaInput = document.getElementById("denda");
-                let statusInput = document.getElementById("status_pengembalian");
-
+                hasilDiv.style.display = "block";
 
                 if (selisihHari > 0) {
-                    // TELAT
-                    let denda = selisihHari * 1000; // contoh: 1000/hari
+                    let denda = selisihHari * 1000;
 
-                    dendaInput.value = denda;
+                    let formattedDenda = denda.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                    dendaInput.value = formattedDenda;
+
+                    let formatted = denda.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
                     statusInput.value = "Terlambat";
 
-                    catatan.value = "Pengembalian terlambat " + selisihHari + " hari. Dikenakan denda.";
+                    note.className = "text-danger fw-bold";
+                    note.innerText = `Kamu terlambat ${selisihHari} hari. Denda Rp ${formattedDenda}`;
+
                 } else {
-                    // TEPAT WAKTU
                     dendaInput.value = 0;
                     statusInput.value = "Tepat Waktu";
 
+                    note.className = "text-success fw-bold";
 
+                    if (selisihHari === 0) {
+                        note.innerText = "Dikembalikan tepat waktu. Tidak ada denda 👍";
+                    } else {
+                        note.innerText = "Kamu mengembalikan lebih cepat. Mantap! 🎉";
+                    }
                 }
             }
 
-            // trigger pertama kali
-            hitungDenda();
+            // jalankan kalau sudah ada data
+            if (wajibInput.value) {
+                hitungDenda();
+            }
+
         });
     </script>
     <script>
@@ -251,7 +280,7 @@
                 icon: 'success',
                 title: 'Berhasil',
                 text: "{{ session('success') }}",
-                timer: 2000,
+                timer: 3000,
                 showConfirmButton: false
             });
         @endif
@@ -261,7 +290,7 @@
                 icon: 'error',
                 title: 'Gagal',
                 text: "{{ session('error') }}",
-                timer: 2000,
+                timer: 3000,
                 showConfirmButton: false
             });
         @endif
