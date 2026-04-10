@@ -124,32 +124,28 @@
                                                     </small>
                                                 @elseif ($selisih == 1)
                                                     <small class="text-warning d-block">
-                                                        ⚠️ Sisa waktu 1 hari lagi segera kembalikan!
+                                                        ⚠️ Sisa waktu 1 hari lagi
                                                     </small>
                                                 @elseif ($selisih == 0)
-                                                    <small class="text-warning d-block">
-                                                        ⚠️ Hari ini batas terakhir! segera kembalikan!
+                                                    <small class="text-warning d-block fw-bold">
+                                                        ⚠️ Hari ini batas terakhir!
                                                     </small>
                                                 @else
-                                                    <small class="text-danger d-block">
-                                                        🚨 Terlambat {{ abs($selisih) }} hari
+                                                    @php
+                                                        $hariTelat = abs($selisih);
+                                                        $denda = $hariTelat * 1000;
+                                                    @endphp
+
+                                                    <small class="text-danger d-block fw-bold">
+                                                        🚨 Telat {{ $hariTelat }} hari • Rp
+                                                        {{ number_format($denda, 0, ',', '.') }}
                                                     </small>
                                                 @endif
                                             @endif
 
-                                            @if ($selisih < 0)
-                                                <small class="text-danger d-block">
-                                                    ⚠️ Harap segera dikembalikan untuk menghindari denda lebih besar
-                                                </small>
-                                            @endif
-                                            @if ($selisih <= 1 && $selisih >= 0)
-                                                <small class="text-warning d-block">
-                                                    ⚠️ Segera kembalikan agar tidak kena denda
-                                                </small>
-                                            @endif
                                             <span>{{ $pinjam->buku->penulis ?? '-' }}</span>
-                                            <div class="mt-2">
 
+                                            <div class="mt-2">
                                                 @if ($isPengembalianDitolak)
                                                     <span class="badge bg-danger">Pengembalian Ditolak</span>
                                                 @elseif ($isPeminjamanDitolak)
@@ -161,7 +157,8 @@
                                                 @else
                                                     @if ($selisih < 0)
                                                         <span class="badge bg-danger">
-                                                            Terlambat {{ abs($selisih) }} hari 🚨
+                                                            Terlambat {{ abs($selisih) }} hari 🚨 | Rp
+                                                            {{ number_format(abs($selisih) * 1000, 0, ',', '.') }}
                                                         </span>
                                                     @elseif ($selisih == 0)
                                                         <span class="badge bg-warning text-dark">
@@ -177,8 +174,8 @@
                                                         </span>
                                                     @endif
                                                 @endif
-
                                             </div>
+
                                             @if (!$isPengembalianDitolak)
                                                 <small class="d-block mt-1 text-muted">
                                                     Wajib kembali:
@@ -257,6 +254,11 @@
                                         ? \Carbon\Carbon::parse(optional($item->pengembalian)->tanggal_kembali)->translatedFormat('d M Y')
                                         : '-' }}
                                 </small>
+                                @if ($item->pengembalian && $item->pengembalian->denda > 0)
+                                    <div class="badge bg-danger mt-2">
+                                        Denda Rp {{ number_format($item->pengembalian->denda, 0, ',', '.') }}
+                                    </div>
+                                @endif
 
                             </figcaption>
                         </div>

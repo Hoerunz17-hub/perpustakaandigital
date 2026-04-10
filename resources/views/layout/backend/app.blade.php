@@ -4,12 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vertical Navbar - Mazer Admin Dashboard</title>
+    <title>RakBuku</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
 
-    <link rel="shortcut icon" href="{{ asset('assetsbackend/compiled/jpg/bukulogo.jpg') }}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ asset('assetsbackend/compiled/png/real.png') }}" type="image/x-icon">
 
     <link rel="stylesheet"
         href="{{ asset('assetsbackend/extensions/datatables.net-bs5/css/dataTables.bootstrap5.min.css') }}">
