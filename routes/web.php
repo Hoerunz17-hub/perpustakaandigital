@@ -43,7 +43,7 @@ Route::middleware(['auth', 'role:petugas'])->group(function () {
     Route::get('/buku/edit/{id}', [BukuBackendController::class, 'edit']);
     Route::post('/buku/update/{id}', [BukuBackendController::class, 'update']);
     Route::get('/buku/delete/{id}', [BukuBackendController::class, 'destroy']);
-    Route::get('/buku/show/{id}', [BukuBackendController::class, 'show']);
+    Route::get('/petugas/buku/show/{id}', [BukuBackendController::class, 'show']);
     Route::post('/buku/update-status/{id}', [BukuBackendController::class, 'updateStatus']);
     // Peminjaman
     Route::get('/petugas/peminjaman', [PeminjamanBackendController::class, 'index']);

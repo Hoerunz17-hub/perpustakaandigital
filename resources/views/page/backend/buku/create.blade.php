@@ -35,7 +35,7 @@
                                             <div class="form-group mandatory">
                                                 <label for="judul_buku" class="form-label">Judul Buku</label>
                                                 <input type="text" id="judul_buku" class="form-control"
-                                                    placeholder="judul_buku" name="judul_buku"
+                                                    placeholder="judul buku" name="judul_buku"
                                                     data-parsley-required="true" />
                                             </div>
                                         </div>
@@ -64,9 +64,19 @@
                                         <div class="col-md-6 col-12">
                                             <div class="form-group">
                                                 <label for="kategori" class="form-label">Kategori</label>
-                                                <input type="text" id="kategori" class="form-control"
-                                                    placeholder="kategori" name="kategori" data-parsley-required="true" />
+                                                <select class="form-select" id="kategori" name="kategori"
+                                                    data-parsley-required="true">
+                                                    <option value="">-- Pilih Kategori --</option>
+                                                    <option value="Agama">Agama</option>
+                                                    <option value="Fiksi">Fiksi</option>
+                                                    <option value="Sejarah">Sejarah</option>
+                                                    <option value="Pendidikan">Pendidikan</option>
+                                                    <option value="Action">Action</option>
+                                                    <option value="Romance">Romance</option>
+                                                    <option value="Fantasy">Fantasy</option>
+                                                </select>
                                             </div>
+                                            </fieldset>
                                         </div>
                                         <div class="col-md-6 col-12">
                                             <div class="form-group">

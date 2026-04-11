@@ -65,9 +65,30 @@
                                         <div class="col-md-6 col-12">
                                             <div class="form-group">
                                                 <label for="kategori" class="form-label">Kategori</label>
-                                                <input type="text" id="kategori" class="form-control"
-                                                    placeholder="kategori" name="kategori" data-parsley-required="true" /
-                                                    value="{{ $data->kategori }}">
+                                                <select class="form-select" id="kategori" name="kategori"
+                                                    data-parsley-required="true">
+                                                    <option value="">-- Pilih Kategori --</option>
+
+                                                    <option value="Agama"
+                                                        {{ $data->kategori == 'Agama' ? 'selected' : '' }}>Agama</option>
+                                                    <option value="Fiksi"
+                                                        {{ $data->kategori == 'Fiksi' ? 'selected' : '' }}>Fiksi</option>
+                                                    <option value="Sejarah"
+                                                        {{ $data->kategori == 'Sejarah' ? 'selected' : '' }}>Sejarah
+                                                    </option>
+                                                    <option value="Pendidikan"
+                                                        {{ $data->kategori == 'Pendidikan' ? 'selected' : '' }}>Pendidikan
+                                                    </option>
+                                                    <option value="Action"
+                                                        {{ $data->kategori == 'Action' ? 'selected' : '' }}>Action</option>
+                                                    <option value="Romance"
+                                                        {{ $data->kategori == 'Romance' ? 'selected' : '' }}>Romance
+                                                    </option>
+                                                    <option value="Fantasy"
+                                                        {{ $data->kategori == 'Fantasy' ? 'selected' : '' }}>Fantasy
+                                                    </option>
+
+                                                </select>
                                             </div>
                                         </div>
                                         <div class="col-md-6 col-12">
