@@ -1,7 +1,7 @@
 @extends('layout.frontend.app')
 
 @section('content')
-    <section class="py-5" style="background:#f8f5f2;">
+    <section class="bg-white" style="padding-top: 100px; padding-bottom: 100px;">
         <div class="container">
 
             <div class="row justify-content-center">

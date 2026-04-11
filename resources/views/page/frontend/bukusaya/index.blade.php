@@ -1,7 +1,7 @@
 @extends('layout.frontend.app')
 @section('content')
     @auth
-        <section class="py-5" style="background: #f8f5f2;">
+        <section class="bg-white" style="padding-top: 100px; padding-bottom: 100px;">
             <div class="container">
 
                 <div class="row g-4">
@@ -61,7 +61,7 @@
             </div>
         </section>
     @endauth
-    <section id="featured-books" class="py-5 my-5">
+    <section id="featured-books" class="bg-white" style="padding-top: 100px; padding-bottom: 100px;">
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
@@ -204,7 +204,7 @@
 
         </div>
     </section>
-    <section class="py-5">
+    <section class="bg-white" style="padding-top: 100px; padding-bottom: 100px;">
         <div class="container">
 
             <div class="section-header align-center">
