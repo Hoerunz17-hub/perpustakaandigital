@@ -94,7 +94,7 @@
                                                 <ul class="dropdown-menu shadow-sm">
                                                     <li>
                                                         <a class="dropdown-item d-flex align-items-center gap-2"
-                                                            href="#">
+                                                            href="{{ route('peminjaman.show', $pinjams->id_peminjaman) }}">
                                                             <i class="fas fa-eye"></i>
                                                             <span>Detail</span>
                                                         </a>
@@ -176,7 +176,7 @@
                 $('#table1').DataTable({
                     destroy: true,
                     language: {
-                        emptyTable: "📚 buku masih kosong"
+                        emptyTable: "📚 Peminjaman masih kosong"
                     }
                 });
             }

@@ -78,4 +78,12 @@ if (!$petugas) {
 
     return back()->with('success', 'Peminjaman ditolak');
 }
+
+public function show($id)
+{
+    $peminjaman = Peminjaman::with(['anggota', 'buku', 'pengembalian'])
+        ->findOrFail($id);
+
+    return view('page.backend.peminjaman.detail', compact('peminjaman'));
+}
 }

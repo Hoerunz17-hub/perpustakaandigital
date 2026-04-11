@@ -49,6 +49,8 @@ Route::middleware(['auth', 'role:petugas'])->group(function () {
     Route::get('/petugas/peminjaman', [PeminjamanBackendController::class, 'index']);
    Route::get('/peminjaman/acc/{id}', [PeminjamanBackendController::class, 'acc'])
     ->name('peminjaman.acc');
+    Route::get('/peminjaman/show/{id}', [PeminjamanBackendController::class, 'show'])
+    ->name('peminjaman.show');
 
 Route::get('/peminjaman/tolak/{id}', [PeminjamanBackendController::class, 'tolak'])
     ->name('peminjaman.tolak');
