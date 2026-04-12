@@ -71,7 +71,10 @@
                                             @endphp
 
                                             @if ($pinjams->status == 'menunggu')
-                                                <button class="btn btn-sm btn-warning">Konfirmasi</button>
+                                                <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
+                                                    data-bs-target="#modalKonfirmasi{{ $pinjams->id_peminjaman }}">
+                                                    Konfirmasi
+                                                </button>
                                             @elseif ($pinjams->status == 'dipinjam')
                                                 <span class="badge bg-primary">Dipinjam</span>
                                             @elseif ($pinjams->status == 'ditolak')

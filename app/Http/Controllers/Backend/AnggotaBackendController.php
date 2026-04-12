@@ -13,8 +13,13 @@ class AnggotaBackendController extends Controller
     return view('page.backend.anggota.index', compact('anggota'));
 }
 
-public function show($id){
-    $anggota = Anggota::findOrFail($id);
-    return view('page.backend.anggota.detail', compact('anggota'));
+public function show($id)
+{
+    $anggota = Anggota::with(['peminjaman.buku', 'peminjaman.pengembalian'])
+        ->findOrFail($id);
+
+    $history = $anggota->peminjaman->sortByDesc('created_at');
+
+    return view('page.backend.anggota.detail', compact('anggota', 'history'));
 }
 }

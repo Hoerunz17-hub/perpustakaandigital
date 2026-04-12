@@ -82,7 +82,95 @@
                         </div>
                     </div>
 
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title">
+                                History Peminjaman
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table" id="table1">
+                                    <thead>
+                                        <tr>
+
+                                            <th class="text-nowrap">Buku</th>
+                                            <th class="text-nowrap">Kode Buku</th>
+                                            <th class="text-nowrap">Tanggal Pinjam</th>
+                                            <th class="text-nowrap">Wajib Kembali</th>
+                                            <th class="text-nowrap">Tanggal Kembali</th>
+                                            <th class="text-nowrap">Status</th>
+                                            <th class="text-nowrap">Denda</th>
+
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($history as $index => $anggotas)
+                                            <tr>
+
+
+                                                <td>{{ $anggotas->buku->judul_buku ?? '-' }}</td>
+
+                                                <td>{{ $anggotas->buku->kode_buku ?? '-' }}</td>
+
+                                                <td>
+                                                    {{ \Carbon\Carbon::parse($anggotas->tanggal_pinjam)->format('d-m-Y') }}
+                                                </td>
+
+                                                <td>
+                                                    {{ \Carbon\Carbon::parse($anggotas->wajib_kembali)->format('d-m-Y') }}
+                                                </td>
+
+                                                <td>
+                                                    {{ optional($anggotas->pengembalian)->tanggal_kembali
+                                                        ? \Carbon\Carbon::parse(optional($anggotas->pengembalian)->tanggal_kembali)->format('d-m-Y')
+                                                        : '-' }}
+                                                </td>
+
+                                                <td>
+                                                    @if ($anggotas->status == 'menunggu')
+                                                        <span class="badge bg-warning">Menunggu</span>
+                                                    @elseif ($anggotas->status == 'dipinjam')
+                                                        <span class="badge bg-primary">Dipinjam</span>
+                                                    @elseif ($anggotas->status == 'ditolak')
+                                                        <span class="badge bg-danger">Ditolak</span>
+                                                    @elseif ($anggotas->status == 'dikembalikan')
+                                                        @if ($anggotas->pengembalian && $anggotas->pengembalian->status == 'terlambat')
+                                                            <span class="badge bg-danger">Terlambat</span>
+                                                        @else
+                                                            <span class="badge bg-success">Dikembalikan</span>
+                                                        @endif
+                                                    @endif
+                                                </td>
+
+                                                <td>
+                                                    {{ optional($anggotas->pengembalian)->denda
+                                                        ? 'Rp ' . number_format(optional($anggotas->pengembalian)->denda, 0, ',', '.')
+                                                        : '-' }}
+                                                </td>
+                                            </tr>
+                                        @empty
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
         </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                if (typeof $ !== 'undefined') {
+                    $('#table1').DataTable({
+                        destroy: true,
+                        language: {
+                            emptyTable: "Anggota masih kosongg"
+                        }
+                    });
+                }
+            });
+        </script>
     @endsection
