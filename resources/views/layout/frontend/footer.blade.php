@@ -5,14 +5,18 @@
             <div class="col-md-6">
 
                 <div class="footer-item">
-                    <div class="company-brand">
-                        <img src="{{ asset('assetsfrontend/images/main-logo.png') }}" alt="logo" class="footer-logo">
-                        <p>
-                            Perpustakaan Digital hadir untuk memudahkan akses buku secara cepat, praktis,
-                            dan terintegrasi. Jelajahi koleksi buku favoritmu dan tingkatkan literasi
-                            melalui satu platform yang mudah digunakan.
-                        </p>
+                    <div class="main-logo" style="margin-bottom: 30px;">
+                        <a href="/" style="text-decoration: none;">
+                            <h1 style="font-family: 'Playfair Display', serif; color: #222; font-size: 42px; letter-spacing: 1px; margin: 0;">
+                                <strong style="font-weight: 800;">RAK</strong><span style="font-weight: 400;">BUKU</span>
+                            </h1>
+                        </a>
                     </div>
+                    <p>
+                        Perpustakaan Digital hadir untuk memudahkan akses buku secara cepat, praktis,
+                        dan terintegrasi. Jelajahi koleksi buku favoritmu dan tingkatkan literasi
+                        melalui satu platform yang mudah digunakan.
+                    </p>
                 </div>
 
             </div>
