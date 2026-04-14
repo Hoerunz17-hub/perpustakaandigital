@@ -5,10 +5,11 @@ namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use App\Models\Buku;
 use App\Models\Peminjaman;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 
 class PeminjamanBackendController extends Controller
 {
@@ -161,5 +162,26 @@ public function destroy($id)
     $peminjaman->delete();
 
     return back()->with('success', 'Data berhasil dihapus');
+}
+public function struk($id)
+{
+    $data = Peminjaman::with(['anggota', 'buku', 'pengembalian'])
+        ->findOrFail($id);
+
+    if ($data->status != 'dikembalikan') {
+        return redirect()->back()->with('error', 'Struk hanya tersedia setelah buku dikembalikan!');
+    }
+
+
+   $petugas = Auth::user()->name ?? '-';  // ambil petugas
+
+$pdf = Pdf::loadView('page.backend.peminjaman.struk', [
+    'data' => $data,
+    'petugas' => $petugas
+])
+->setPaper([0, 0, 226.77, 600], 'portrait');
+        // 226px ≈ 80mm (struk kasir)
+
+    return $pdf->stream('struk-peminjaman.pdf');
 }
 }

@@ -61,13 +61,16 @@
             </div>
         </section>
     @endauth
-    <section id="active-loans-section" class="bg-white" style="padding-top: 100px; padding-bottom: 80px; position: relative; overflow: hidden;">
+    <section id="active-loans-section" class="bg-white"
+        style="padding-top: 100px; padding-bottom: 80px; position: relative; overflow: hidden;">
         <div class="loans-bg-accent"></div>
         <div class="container">
             <div class="section-header align-center mb-5" data-aos="fade-up">
                 <div class="premium-badge mb-3">DURASI PINJAM AKTIF</div>
-                <h2 class="section-title display-5 fw-bold mb-2" style="font-family: var(--heading-font);">Buku Sedang Dipinjam</h2>
-                <p class="text-muted mx-auto" style="max-width: 600px;">Kelola koleksi yang sedang Anda baca. Pastikan untuk mengembalikan buku tepat waktu untuk menjaga reputasi literasi Anda.</p>
+                <h2 class="section-title display-5 fw-bold mb-2" style="font-family: var(--heading-font);">Buku Sedang
+                    Dipinjam</h2>
+                <p class="text-muted mx-auto" style="max-width: 600px;">Kelola koleksi yang sedang Anda baca. Pastikan untuk
+                    mengembalikan buku tepat waktu untuk menjaga reputasi literasi Anda.</p>
             </div>
 
             <div class="row g-4 justify-content-center" id="active-loans-grid">
@@ -78,7 +81,7 @@
                         $isPengembalianDitolak = $pinjam->pengembalian && $pinjam->pengembalian->status == 'ditolak';
                         $isPeminjamanDitolak = $pinjam->status == 'ditolak';
                         $selisih = $today->diffInDays($wajib, false);
-                        
+
                         $borderClass = '';
                         $glowClass = '';
                         if ($selisih < 0) {
@@ -90,7 +93,8 @@
                         }
                     @endphp
                     <div class="col-xl-3 col-lg-4 col-md-6 loan-card-wrapper">
-                        <div class="premium-loan-card {{ $borderClass }}" data-tilt data-tilt-max="5" data-tilt-speed="1000">
+                        <div class="premium-loan-card {{ $borderClass }}" data-tilt data-tilt-max="5"
+                            data-tilt-speed="1000">
                             <div class="card-inner">
                                 <div class="loan-cover-wrapper">
                                     <div class="loan-status-overlay">
@@ -104,7 +108,8 @@
                                             @if ($selisih < 0)
                                                 <span class="luminous-badge badge-terlambat pulse-danger">Terlambat</span>
                                             @elseif ($selisih == 0)
-                                                <span class="luminous-badge badge-warning text-white">Terakhir Hari Ini</span>
+                                                <span class="luminous-badge badge-warning text-white">Terakhir Hari
+                                                    Ini</span>
                                             @elseif ($selisih == 1)
                                                 <span class="luminous-badge badge-warning text-white">Sisa 1 Hari</span>
                                             @else
@@ -112,14 +117,16 @@
                                             @endif
                                         @endif
                                     </div>
-                                    <img src="{{ asset('storage/' . $pinjam->buku->cover) }}" class="loan-book-img {{ $glowClass }}" alt="{{ $pinjam->buku->judul_buku }}">
+                                    <img src="{{ asset('storage/' . $pinjam->buku->cover) }}"
+                                        class="loan-book-img {{ $glowClass }}" alt="{{ $pinjam->buku->judul_buku }}">
                                 </div>
 
                                 <div class="loan-info">
                                     <h3 class="loan-title">{{ $pinjam->buku->judul_buku }}</h3>
                                     <span class="loan-author">{{ $pinjam->buku->penulis }}</span>
 
-                                    <div class="loan-deadline-box {{ $selisih < 0 ? 'bg-soft-danger' : ($selisih <= 1 ? 'bg-soft-warning' : 'bg-soft-success') }}">
+                                    <div
+                                        class="loan-deadline-box {{ $selisih < 0 ? 'bg-soft-danger' : ($selisih <= 1 ? 'bg-soft-warning' : 'bg-soft-success') }}">
                                         @if ($selisih < 0)
                                             <div class="deadline-text text-danger">
                                                 <i class="bi bi-exclamation-triangle-fill"></i>
@@ -129,7 +136,8 @@
                                                 Rp {{ number_format(abs($selisih) * 1000, 0, ',', '.') }}
                                             </div>
                                         @else
-                                            <div class="deadline-text {{ $selisih <= 1 ? 'text-warning' : 'text-success' }}">
+                                            <div
+                                                class="deadline-text {{ $selisih <= 1 ? 'text-warning' : 'text-success' }}">
                                                 <i class="bi bi-calendar-check"></i>
                                                 <span>{{ $selisih == 0 ? 'Hari Ini Terakhir' : $selisih . ' Hari Lagi' }}</span>
                                             </div>
@@ -149,8 +157,8 @@
                                                 Proses Verifikasi...
                                             </button>
                                         @else
-                                            <a href="{{ url('/anggota/pengembalian?id_buku=' . $pinjam->id_buku) }}" 
-                                               class="btn-premium-action {{ $selisih < 0 ? 'btn-danger-glow' : 'btn-primary-glow' }} w-100">
+                                            <a href="{{ url('/anggota/pengembalian?id_buku=' . $pinjam->id_buku) }}"
+                                                class="btn-premium-action {{ $selisih < 0 ? 'btn-danger-glow' : 'btn-primary-glow' }} w-100">
                                                 <span>Kembalikan Buku</span>
                                                 <i class="bi bi-arrow-right-short"></i>
                                             </a>
@@ -166,32 +174,38 @@
                             <i class="bi bi-journal-x display-1 text-muted mb-4"></i>
                             <h4>Tidak Ada Pinjaman Aktif</h4>
                             <p class="text-muted">Rak buku digital Anda sedang kosong. Yuk cari bacaan menarik!</p>
-                            <a href="{{ url('/katalog') }}" class="btn btn-dark px-4 py-2 mt-3 rounded-pill">Lihat Katalog</a>
+                            <a href="{{ url('/#popular-books') }}" class="btn btn-dark px-4 py-2 mt-3 rounded-pill">Lihat
+                                Katalog</a>
                         </div>
                     </div>
                 @endforelse
             </div>
         </div>
     </section>
-    <section class="history-dashboard-section" style="padding-top: 100px; padding-bottom: 150px; background: #fdfdfd; overflow: hidden;">
+    <section class="history-dashboard-section"
+        style="padding-top: 100px; padding-bottom: 150px; background: #fdfdfd; overflow: hidden;">
         <div class="container">
 
             <div class="section-header align-center mb-5" data-aos="fade-up">
                 <div class="premium-badge mb-3">RIWAYAT PEMINJAMAN</div>
-                <h2 class="section-title display-5 fw-bold mb-2" style="font-family: var(--heading-font);">History Koleksi Saya</h2>
-                <p class="text-muted mx-auto" style="max-width: 600px;">Jejak literasi perjalanan membaca Anda yang tersimpan secara aman dalam arsip digital kami.</p>
+                <h2 class="section-title display-5 fw-bold mb-2" style="font-family: var(--heading-font);">History Koleksi
+                    Saya</h2>
+                <p class="text-muted mx-auto" style="max-width: 600px;">Jejak literasi perjalanan membaca Anda yang
+                    tersimpan secara aman dalam arsip digital kami.</p>
             </div>
 
             <div class="row g-4 justify-content-center" id="history-grid">
                 @forelse ($history as $item)
                     <div class="col-xl-3 col-lg-4 col-md-6 history-card-wrapper">
-                        <div class="premium-history-card" data-tilt data-tilt-max="7" data-tilt-speed="1000" data-tilt-perspective="1000">
+                        <div class="premium-history-card" data-tilt data-tilt-max="7" data-tilt-speed="1000"
+                            data-tilt-perspective="1000">
                             <div class="card-inner">
                                 <!-- Book Cover Container -->
                                 <div class="book-cover-wrapper">
                                     <div class="book-cover-glow"></div>
-                                    <img src="{{ asset('storage/' . $item->buku->cover) }}" class="history-book-img" alt="{{ $item->buku->judul_buku }}">
-                                    
+                                    <img src="{{ asset('storage/' . $item->buku->cover) }}" class="history-book-img"
+                                        alt="{{ $item->buku->judul_buku }}">
+
                                     <!-- Status Badge Over Image -->
                                     <div class="status-overlay">
                                         @if ($item->status == 'ditolak')
@@ -237,7 +251,8 @@
                                     @if ($item->pengembalian && $item->pengembalian->denda > 0)
                                         <div class="fine-banner-premium">
                                             <div class="fine-pulse"></div>
-                                            <span class="fine-text">Denda: Rp {{ number_format($item->pengembalian->denda, 0, ',', '.') }}</span>
+                                            <span class="fine-text">Denda: Rp
+                                                {{ number_format($item->pengembalian->denda, 0, ',', '.') }}</span>
                                         </div>
                                     @endif
                                 </div>
@@ -250,7 +265,8 @@
                             <i class="icon-book-open display-1 text-light mb-4"></i>
                             <h4>Belum Ada Jejak Membaca</h4>
                             <p class="text-muted">Mulai petualangan barumu hari ini di katalog kami.</p>
-                            <a href="{{ url('/katalog') }}" class="btn btn-outline-primary px-4 py-2 mt-3 rounded-pill">Eksplor Buku</a>
+                            <a href="{{ url('/#popular-books') }}"
+                                class="btn btn-outline-primary px-4 py-2 mt-3 rounded-pill">Eksplor Buku</a>
                         </div>
                     </div>
                 @endforelse
@@ -282,21 +298,26 @@
             background: #fff;
             border-radius: 24px;
             overflow: hidden;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.04);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
             transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
             height: 100%;
-            border: 1px solid rgba(0,0,0,0.03);
+            border: 1px solid rgba(0, 0, 0, 0.03);
             position: relative;
         }
 
         .premium-loan-card:hover {
             transform: translateY(-10px);
-            box-shadow: 0 25px 60px rgba(0,0,0,0.08);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.08);
             border-color: rgba(197, 169, 146, 0.2);
         }
 
-        .border-danger-premium { border-color: rgba(255, 71, 87, 0.3) !important; }
-        .border-warning-premium { border-color: rgba(255, 165, 2, 0.3) !important; }
+        .border-danger-premium {
+            border-color: rgba(255, 71, 87, 0.3) !important;
+        }
+
+        .border-warning-premium {
+            border-color: rgba(255, 165, 2, 0.3) !important;
+        }
 
         .loan-cover-wrapper {
             position: relative;
@@ -312,10 +333,10 @@
 
         .loan-book-img {
             width: 100%;
-            height: 300px;
+            height: 350px;
             object-fit: cover;
             border-radius: 16px;
-            box-shadow: 0 12px 25px rgba(0,0,0,0.1);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.1);
             transition: all 0.5s ease;
         }
 
@@ -323,8 +344,13 @@
             transform: scale(1.03);
         }
 
-        .glow-danger { box-shadow: 0 12px 30px rgba(255, 71, 87, 0.2) !important; }
-        .glow-warning { box-shadow: 0 12px 30px rgba(255, 165, 2, 0.2) !important; }
+        .glow-danger {
+            box-shadow: 0 12px 30px rgba(255, 71, 87, 0.2) !important;
+        }
+
+        .glow-warning {
+            box-shadow: 0 12px 30px rgba(255, 165, 2, 0.2) !important;
+        }
 
         .loan-info {
             padding: 12px 16px;
@@ -358,9 +384,17 @@
             margin-bottom: 8px;
         }
 
-        .bg-soft-success { background: rgba(46, 213, 115, 0.08); }
-        .bg-soft-warning { background: rgba(255, 165, 2, 0.08); }
-        .bg-soft-danger { background: rgba(255, 71, 87, 0.08); }
+        .bg-soft-success {
+            background: rgba(46, 213, 115, 0.08);
+        }
+
+        .bg-soft-warning {
+            background: rgba(255, 165, 2, 0.08);
+        }
+
+        .bg-soft-danger {
+            background: rgba(255, 71, 87, 0.08);
+        }
 
         .deadline-text {
             display: flex;
@@ -394,7 +428,7 @@
         .btn-primary-glow {
             background: var(--premium-dark);
             color: #fff !important;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
         }
 
         .btn-primary-glow:hover {
@@ -427,14 +461,22 @@
         }
 
         @keyframes pulse-red-badge {
-            0% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(255, 71, 87, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); }
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(255, 71, 87, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 71, 87, 0);
+            }
         }
 
         /* REUSING HISTORY STYLES OR SIMILAR MAPPINGS */
         .history-dashboard-section {
-            background-image: 
+            background-image:
                 radial-gradient(at 0% 0%, rgba(197, 169, 146, 0.05) 0px, transparent 50%),
                 radial-gradient(at 100% 100%, rgba(197, 169, 146, 0.05) 0px, transparent 50%);
         }
@@ -456,7 +498,7 @@
             background: #fff;
             border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
             transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
             height: 100%;
             border: 1px solid rgba(240, 240, 240, 1);
@@ -488,10 +530,10 @@
 
         .history-book-img {
             width: 100%;
-            height: 180px;
+            height: 350px;
             object-fit: cover;
             border-radius: 12px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
             transition: transform 0.5s ease;
         }
 
@@ -514,31 +556,38 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             backdrop-filter: blur(8px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        .badge-kembali { 
-            background: rgba(46, 213, 115, 0.9); 
+        .badge-kembali {
+            background: rgba(46, 213, 115, 0.9);
             color: #fff;
             box-shadow: 0 0 15px rgba(46, 213, 115, 0.3);
         }
-        .badge-menunggu { 
-            background: rgba(52, 152, 219, 0.9); 
+
+        .badge-menunggu {
+            background: rgba(52, 152, 219, 0.9);
             color: #fff;
             box-shadow: 0 0 15px rgba(52, 152, 219, 0.3);
         }
-        .badge-terlambat { 
-            background: rgba(255, 71, 87, 0.9); 
+
+        .badge-terlambat {
+            background: rgba(255, 71, 87, 0.9);
             color: #fff;
             box-shadow: 0 0 15px rgba(255, 71, 87, 0.3);
         }
-        .badge-ditolak { 
-            background: rgba(47, 53, 66, 0.9); 
+
+        .badge-ditolak {
+            background: rgba(47, 53, 66, 0.9);
             color: #fff;
             box-shadow: 0 0 15px rgba(47, 53, 66, 0.3);
         }
-        .badge-warning { background: rgba(255, 165, 2, 0.9); color: #fff; }
+
+        .badge-warning {
+            background: rgba(255, 165, 2, 0.9);
+            color: #fff;
+        }
 
         .history-info {
             padding: 15px 20px;
@@ -573,10 +622,13 @@
 
         .meta-item {
             display: flex;
-            flex-direction: column; /* Stack label and date vertically */
-            align-items: center;    /* Center them horizontally */
+            flex-direction: column;
+            /* Stack label and date vertically */
+            align-items: center;
+            /* Center them horizontally */
             text-align: center;
-            flex: 1;                /* Occupy equal space */
+            flex: 1;
+            /* Occupy equal space */
         }
 
         .meta-content {
@@ -599,7 +651,8 @@
             font-size: 0.85rem;
             font-weight: 700;
             color: #111;
-            white-space: nowrap; /* Keep the date on one line */
+            white-space: nowrap;
+            /* Keep the date on one line */
         }
 
         .fine-banner-premium {
@@ -630,16 +683,27 @@
         }
 
         @keyframes pulse-red {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(255, 71, 87, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); }
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.7);
+            }
+
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 6px rgba(255, 71, 87, 0);
+            }
+
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(255, 71, 87, 0);
+            }
         }
 
         .empty-state-luxury {
             background: #fff;
             padding: 60px;
             border-radius: 30px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.03);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.03);
             border: 1px solid #f5f5f5;
         }
 
@@ -658,12 +722,30 @@
             text-align: center;
         }
 
-        .book-btn.btn-danger { background: #dc3545; color: #fff; }
-        .book-btn.btn-dark { background: #212529; color: #fff; }
-        .book-btn.btn-warning { background: #ffc107; color: #000; }
-        .book-btn.btn-primary { background: #222; color: #fff; }
+        .book-btn.btn-danger {
+            background: #dc3545;
+            color: #fff;
+        }
 
-        .book-btn:hover { transform: translateY(-2px); opacity: 0.9; }
+        .book-btn.btn-dark {
+            background: #212529;
+            color: #fff;
+        }
+
+        .book-btn.btn-warning {
+            background: #ffc107;
+            color: #000;
+        }
+
+        .book-btn.btn-primary {
+            background: #222;
+            color: #fff;
+        }
+
+        .book-btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
 
         .profile-card {
             background: #ffffff;
@@ -672,7 +754,9 @@
             transition: 0.3s;
         }
 
-        .profile-card:hover { transform: translateY(-4px); }
+        .profile-card:hover {
+            transform: translateY(-4px);
+        }
 
         .data-card {
             background: #ffffff;
@@ -696,10 +780,26 @@
             transition: 0.2s;
         }
 
-        .stat-box:hover { background: #f1f1f1; }
-        .stat-box h4 { margin: 0; font-weight: 600; color: #2c2c2c; }
-        .stat-box small { color: #888; }
-        .data-value { background: #f8f9fa; padding: 10px 15px; border-radius: 8px; font-weight: 600; }
+        .stat-box:hover {
+            background: #f1f1f1;
+        }
+
+        .stat-box h4 {
+            margin: 0;
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .stat-box small {
+            color: #888;
+        }
+
+        .data-value {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
