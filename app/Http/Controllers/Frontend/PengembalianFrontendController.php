@@ -17,10 +17,10 @@ public function index(Request $request)
 {
     $anggotaId = Auth::user()->anggota->id_anggota;
 
-   $peminjaman = Peminjaman::with('buku')
-    ->where('id_anggota', $anggotaId)
-    ->whereIn('status', ['dipinjam', 'menunggu_pengembalian', 'dikembalikan', 'ditolak'])
-    ->get();
+    $peminjaman = Peminjaman::with('buku')
+        ->where('id_anggota', $anggotaId)
+        ->where('status', 'dipinjam')
+        ->get();
 
     $buku = $peminjaman->pluck('buku');
 
@@ -31,7 +31,7 @@ public function index(Request $request)
     if ($selectedBuku) {
         $detailPinjam = Peminjaman::where('id_anggota', $anggotaId)
             ->where('id_buku', $selectedBuku)
-            ->whereIn('status', ['dipinjam', 'menunggu_pengembalian'])
+            ->where('status', 'dipinjam')
             ->first();
     }
 
@@ -41,7 +41,6 @@ public function index(Request $request)
     $request->validate([
     'id_buku' => 'required|exists:buku,id_buku',
     'tanggal_kembali' => 'required|date',
-     'kondisi_buku' => 'required|in:normal,rusak,hilang',
 ]);
 
     if (!Auth::check()) {
@@ -56,7 +55,7 @@ public function index(Request $request)
 
 $peminjaman = Peminjaman::where('id_buku', $request->id_buku)
     ->where('id_anggota', $anggotaId) // ✅ BENAR
-    ->whereIn('status', ['dipinjam', 'menunggu_pengembalian'])
+    ->where('status', 'dipinjam')
     ->whereDoesntHave('pengembalian')
     ->latest()
     ->first();
@@ -66,45 +65,25 @@ $peminjaman = Peminjaman::where('id_buku', $request->id_buku)
         }
 
         $wajib = Carbon::parse($peminjaman->wajib_kembali);
-        $kembali = Carbon::today();
+        $kembali = Carbon::parse($request->tanggal_kembali);
 
         $selisih = $kembali->diffInDays($wajib, false);
 
-       $denda = 0;
+        if ($selisih < 0) {
+            $status = 'terlambat';
+            $denda = abs($selisih) * 1000;
+        } else {
+            $status = 'tepat_waktu';
+            $denda = 0;
+        }
 
-// keterlambatan
-if ($selisih < 0) {
-    $status = 'terlambat';
-    $denda += abs($selisih) * 1000;
-} else {
-    $status = 'tepat_waktu';
-}
-
-// 🔥 kondisi buku
-if ($request->kondisi_buku == 'rusak') {
-    $denda += 50000;
-} elseif ($request->kondisi_buku == 'hilang') {
-    $denda += 30000;
-}
-
-        // 1. simpan pengembalian
-        Pengembalian::create([
-            'id_peminjaman' => $peminjaman->id_peminjaman,
-           'id_petugas' => 1,
-            'tanggal_kembali' => $request->tanggal_kembali,
-            'denda' => $denda,
-            'status' => $status,
-             'kondisi_buku' => $request->kondisi_buku,
-        ]);
-
-        // 2. update status peminjaman (MENUNGGU KONFIRMASI)
-$peminjaman->status = 'menunggu_pengembalian';
-$peminjaman->save();
-
+      $peminjaman->update([
+    'status' => 'menunggu_pengembalian'
+]);
 
         DB::commit();
 
-        return redirect('/bukusaya')->with('success', 'Menunggu Konfirmasi Petugas');
+        return redirect('/bukusaya')->with('success', 'Pengembalian berhasil');
 
     } catch (\Exception $e) {
         DB::rollback();
