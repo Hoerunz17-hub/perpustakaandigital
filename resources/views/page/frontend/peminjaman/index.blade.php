@@ -88,8 +88,18 @@
                                 <input type="hidden" name="wajib_kembali" id="wajib_kembali">
                             </div>
                             <div id="note_peminjaman" class="alert alert-info d-none mt-2">
-                                📌 Buku harus dikembalikan maksimal <b>7 hari</b><br>
-                                📌 Keterlambatan akan dikenakan denda
+                                <b>📌 Ketentuan Peminjaman:</b><br>
+
+                                • Maksimal peminjaman <b>7 hari</b><br>
+                                • Denda keterlambatan <b>Rp 1.000 / hari</b><br>
+                                • Buku rusak dikenakan denda <b>Rp 50.000</b><br>
+                                • Buku hilang dikenakan denda <b>Rp 30.000</b><br>
+
+                                <hr class="my-2">
+
+                                <small class="text-muted">
+                                    Pastikan buku dikembalikan tepat waktu ya
+                                </small>
                             </div>
 
                             <!-- Button -->
@@ -193,6 +203,10 @@
         .btn-kembali:hover {
             background: #5c636a;
         }
+
+        #note_peminjaman {
+            transition: all 0.3s ease;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -223,6 +237,8 @@
 
             selectBuku.addEventListener('change', function() {
 
+                let noteBox = document.getElementById('note_peminjaman');
+
                 if (this.value !== "") {
 
                     let today = new Date();
@@ -238,11 +254,18 @@
                     document.getElementById('wajib_kembali').value = wajibKembali;
                     document.getElementById('wajib_kembali_view').value = wajibKembali;
 
-                    // 🔥 TAMPILKAN NOTE
-                    document.getElementById('note_peminjaman').classList.remove('d-none');
+
+                    noteBox.classList.remove('d-none');
+                    noteBox.style.opacity = 0;
+                    noteBox.style.transform = "scale(0.95)";
+
+                    setTimeout(() => {
+                        noteBox.style.opacity = 1;
+                        noteBox.style.transform = "scale(1)";
+                    }, 100);
+
                 } else {
-                    // kalau balik ke kosong, note hilang lagi
-                    document.getElementById('note_peminjaman').classList.add('d-none');
+                    noteBox.classList.add('d-none');
                 }
             });
 

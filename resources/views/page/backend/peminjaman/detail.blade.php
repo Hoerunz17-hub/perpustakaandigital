@@ -160,7 +160,35 @@
                       </div>
 
                       <div class="card-body">
+                          @php
+                              use Carbon\Carbon;
 
+                              $wajib = Carbon::parse($peminjaman->wajib_kembali);
+                              $kembali = optional($peminjaman->pengembalian)->tanggal_kembali
+                                  ? Carbon::parse($peminjaman->pengembalian->tanggal_kembali)
+                                  : Carbon::today();
+
+                              // 🔥 TELAT HARI
+                              $telatHari = $kembali->gt($wajib) ? $wajib->diffInDays($kembali) : 0;
+
+                              // 🔥 DENDA TELAT (misal 1000/hari)
+                              $dendaPerHari = 1000;
+                              $dendaTelat = $telatHari * $dendaPerHari;
+
+                              // 🔥 DENDA RUSAK / HILANG
+                              $kondisi = optional($peminjaman->pengembalian)->kondisi_buku;
+
+                              $dendaRusak = 0;
+
+                              if ($kondisi == 'rusak') {
+                                  $dendaRusak = 50000;
+                              } elseif ($kondisi == 'hilang') {
+                                  $dendaRusak = 30000;
+                              }
+
+                              // 🔥 TOTAL DENDA
+                              $totalDenda = $dendaTelat + $dendaRusak;
+                          @endphp
                           <div class="row g-3">
 
                               <div class="col-md-4">
@@ -186,12 +214,73 @@
                                   </div>
                               </div>
 
+                              @if ($telatHari > 0 || $dendaRusak > 0)
+                                  <div class="col-12">
+                                      <small class="text-muted d-block mb-2">Rincian Denda</small>
+
+                                      <div class="row g-3">
+
+                                          {{-- TELAT --}}
+                                          <div class="col-md-4">
+                                              <div class="p-3 border rounded bg-light h-100">
+                                                  <small class="text-muted">Keterlambatan</small>
+                                                  <div class="fw-bold text-danger">
+                                                      {{ $telatHari }} hari
+                                                  </div>
+                                                  <div>
+                                                      Rp {{ number_format($dendaTelat, 0, ',', '.') }}
+                                                  </div>
+                                              </div>
+                                          </div>
+
+                                          {{-- RUSAK / HILANG --}}
+                                          <div class="col-md-4">
+                                              <div class="p-3 border rounded bg-light h-100">
+                                                  <small class="text-muted">Kerusakan</small>
+                                                  <div class="fw-bold text-danger">
+                                                      @if ($kondisi == 'rusak')
+                                                          Rusak
+                                                      @elseif ($kondisi == 'hilang')
+                                                          Hilang
+                                                      @else
+                                                          -
+                                                      @endif
+                                                  </div>
+                                                  <div>
+                                                      Rp {{ number_format($dendaRusak, 0, ',', '.') }}
+                                                  </div>
+                                              </div>
+                                          </div>
+
+                                          {{-- TOTAL --}}
+                                          <div class="col-md-4">
+                                              <div class="p-3 border rounded bg-danger text-white h-100">
+                                                  <small>Total Denda</small>
+                                                  <div class="fw-bold fs-5">
+                                                      Rp {{ number_format($totalDenda, 0, ',', '.') }}
+                                                  </div>
+                                              </div>
+                                          </div>
+
+                                      </div>
+                                  </div>
+                              @endif
                               <div class="col-md-4">
-                                  <small class="text-muted">Denda</small>
+                                  <small class="text-muted">Kondisi Buku</small>
                                   <div class="fw-semibold">
-                                      {{ optional($peminjaman->pengembalian)->denda
-                                          ? 'Rp ' . number_format($peminjaman->pengembalian->denda, 0, ',', '.')
-                                          : '-' }}
+                                      @php
+                                          $kondisi = optional($peminjaman->pengembalian)->kondisi_buku;
+                                      @endphp
+
+                                      @if (!$kondisi)
+                                          -
+                                      @elseif ($kondisi == 'normal')
+                                          <span class="badge bg-success">Normal</span>
+                                      @elseif ($kondisi == 'rusak')
+                                          <span class="badge bg-warning text-dark">Rusak</span>
+                                      @elseif ($kondisi == 'hilang')
+                                          <span class="badge bg-danger">Hilang</span>
+                                      @endif
                                   </div>
                               </div>
 

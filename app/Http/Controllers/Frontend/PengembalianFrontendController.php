@@ -41,6 +41,7 @@ public function index(Request $request)
     $request->validate([
     'id_buku' => 'required|exists:buku,id_buku',
     'tanggal_kembali' => 'required|date',
+     'kondisi_buku' => 'required|in:normal,rusak,hilang',
 ]);
 
     if (!Auth::check()) {
@@ -69,13 +70,22 @@ $peminjaman = Peminjaman::where('id_buku', $request->id_buku)
 
         $selisih = $kembali->diffInDays($wajib, false);
 
-        if ($selisih < 0) {
-            $status = 'terlambat';
-            $denda = abs($selisih) * 1000;
-        } else {
-            $status = 'tepat_waktu';
-            $denda = 0;
-        }
+       $denda = 0;
+
+// keterlambatan
+if ($selisih < 0) {
+    $status = 'terlambat';
+    $denda += abs($selisih) * 1000;
+} else {
+    $status = 'tepat_waktu';
+}
+
+// 🔥 kondisi buku
+if ($request->kondisi_buku == 'rusak') {
+    $denda += 50000;
+} elseif ($request->kondisi_buku == 'hilang') {
+    $denda += 30000;
+}
 
         // 1. simpan pengembalian
         Pengembalian::create([
@@ -84,6 +94,7 @@ $peminjaman = Peminjaman::where('id_buku', $request->id_buku)
             'tanggal_kembali' => $request->tanggal_kembali,
             'denda' => $denda,
             'status' => $status,
+             'kondisi_buku' => $request->kondisi_buku,
         ]);
 
         // 2. update status peminjaman (MENUNGGU KONFIRMASI)

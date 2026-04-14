@@ -96,6 +96,15 @@
                                     <input type="text" class="form-control" id="status_pengembalian" readonly>
                                 </div>
 
+                                <div class="mb-3">
+                                    <label class="form-label">Kondisi Buku</label>
+                                    <select name="kondisi_buku" id="kondisi_buku" class="form-control" required>
+                                        <option value="normal">Normal</option>
+                                        <option value="rusak">Rusak (Denda Rp 50.000)</option>
+                                        <option value="hilang">Hilang (Denda Rp 30.000)</option>
+                                    </select>
+                                </div>
+
                                 <!-- Denda -->
                                 <div class="mb-3">
                                     <label class="form-label">Denda</label>
@@ -221,6 +230,7 @@
             let dendaInput = document.getElementById("denda");
             let statusInput = document.getElementById("status_pengembalian");
             let note = document.getElementById("note_denda");
+            let kondisiSelect = document.getElementById("kondisi_buku");
 
             function hitungDenda() {
                 if (!wajibInput.value) return;
@@ -234,33 +244,45 @@
 
                 hasilDiv.style.display = "block";
 
+                let denda = 0;
+
+                // Denda keterlambatan
                 if (selisihHari > 0) {
-                    let denda = selisihHari * 1000;
-
-                    let formattedDenda = denda.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-                    dendaInput.value = formattedDenda;
-
-                    let formatted = denda.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-
+                    denda += selisihHari * 1000;
                     statusInput.value = "Terlambat";
-
-                    note.className = "text-danger fw-bold";
-                    note.innerText = `Kamu terlambat ${selisihHari} hari. Denda Rp ${formattedDenda}`;
-
                 } else {
-                    dendaInput.value = 0;
                     statusInput.value = "Tepat Waktu";
+                }
 
+                // 🔥 TAMBAHAN: kondisi buku
+                let kondisi = kondisiSelect.value;
+
+                if (kondisi === "rusak") {
+                    denda += 50000;
+                } else if (kondisi === "hilang") {
+                    denda += 30000;
+                }
+
+                // format rupiah
+                let formatted = denda.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+                dendaInput.value = formatted;
+
+                note.className = "fw-bold";
+                if (denda > 0) {
+                    note.className = "text-danger fw-bold";
+                    note.innerText = `Total Denda: Rp ${formatted}`;
+                } else {
                     note.className = "text-success fw-bold";
-
-                    if (selisihHari === 0) {
-                        note.innerText = "Dikembalikan tepat waktu. Tidak ada denda 👍";
-                    } else {
-                        note.innerText = "Kamu mengembalikan lebih cepat. Mantap! 🎉";
-                    }
+                    note.innerText = "Tidak ada denda Madepp";
                 }
             }
 
+            // trigger saat ganti kondisi
+            kondisiSelect.addEventListener("change", hitungDenda);
+            document.getElementById("pilih_buku")?.addEventListener("change", function() {
+                setTimeout(hitungDenda, 500);
+            });
             // jalankan kalau sudah ada data
             if (wajibInput.value) {
                 hitungDenda();
