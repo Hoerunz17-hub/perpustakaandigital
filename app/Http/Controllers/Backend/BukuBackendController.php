@@ -4,16 +4,20 @@ namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
 use App\Models\Buku;
+use App\Models\Peminjaman;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class BukuBackendController extends Controller
 {
-   public function index()
-    {
-        $data = Buku::all();
-        return view('page.backend.buku.index', compact('data'));
-    }
+  public function index()
+{
+    $data = Buku::withCount(['peminjaman as sedang_dipinjam' => function ($q) {
+        $q->where('status', 'dipinjam');
+    }])->get();
+
+    return view('page.backend.buku.index', compact('data'));
+}
 
     public function create()
     {
@@ -121,7 +125,16 @@ public function show($id)
 {
     $buku = Buku::findOrFail($id);
 
-    // 🔥 hapus cover kalau ada
+    // CEK APAKAH BUKU MASIH DIPINJAM
+   $masihDipinjam = Peminjaman::where('id_buku', $id)
+    ->whereIn('status', ['dipinjam', 'menunggu_pengembalian', 'terlambat'])
+    ->exists();
+
+    if ($masihDipinjam) {
+        return redirect('/buku')->with('error', 'Buku tidak bisa dihapus karena sedang dipinjam!');
+    }
+
+    // 🔥 HAPUS COVER
     if ($buku->cover && Storage::disk('public')->exists($buku->cover)) {
         Storage::disk('public')->delete($buku->cover);
     }

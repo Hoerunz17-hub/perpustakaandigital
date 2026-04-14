@@ -119,6 +119,16 @@
                                                             <span>Detail</span>
                                                         </a>
                                                     </li>
+                                                    @if ($pinjams->status == 'dikembalikan')
+                                                        <li>
+                                                            <a class="dropdown-item d-flex align-items-center gap-2"
+                                                                href="{{ route('peminjaman.struk', $pinjams->id_peminjaman) }}"
+                                                                target="_blank">
+                                                                <i class="fas fa-print"></i>
+                                                                <span>Cetak Struk</span>
+                                                            </a>
+                                                        </li>
+                                                    @endif
                                                     <li>
                                                         <a href="#"
                                                             class="dropdown-item d-flex align-items-center gap-2 text-danger btn-delete"

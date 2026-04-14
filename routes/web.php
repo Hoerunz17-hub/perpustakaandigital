@@ -55,6 +55,8 @@ Route::middleware(['auth:admin', 'role:petugas'])->group(function () {
     ->name('peminjaman.tolakKembali');
     Route::get('/peminjaman/delete/{id}', [PeminjamanBackendController::class, 'destroy'])
     ->name('peminjaman.delete');
+    Route::get('/peminjaman/{id}/struk', [PeminjamanBackendController::class, 'struk'])
+    ->name('peminjaman.struk');
 
 Route::get('/peminjaman/tolak/{id}', [PeminjamanBackendController::class, 'tolak'])
     ->name('peminjaman.tolak');

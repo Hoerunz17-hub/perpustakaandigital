@@ -90,11 +90,22 @@
                                                         </a>
                                                     </li>
                                                     <li>
-                                                        <a class="dropdown-item d-flex align-items-center gap-2 text-danger"
+                                                        <a class="dropdown-item d-flex align-items-center gap-2
+    {{ $buku->sedang_dipinjam > 0 ? 'text-muted' : 'text-danger' }}"
                                                             href="#"
-                                                            onclick="event.preventDefault(); confirmDelete({{ $buku->id_buku }})">
+                                                            style="{{ $buku->sedang_dipinjam > 0 ? 'cursor:not-allowed;' : '' }}"
+                                                            @if ($buku->sedang_dipinjam > 0) data-bs-toggle="tooltip"
+        data-bs-placement="left"
+        data-bs-title="Buku sedang dipinjam, tidak bisa dihapus" @endif
+                                                            onclick="event.preventDefault();
+    @if ($buku->sedang_dipinjam > 0) return false;
+    @else
+        confirmDelete({{ $buku->id_buku }}); @endif">
+
                                                             <i class="fas fa-trash"></i>
-                                                            <span>Delete</span>
+                                                            <span>
+                                                                {{ $buku->sedang_dipinjam > 0 ? 'Tidak Tersedia' : 'Delete' }}
+                                                            </span>
                                                         </a>
                                                     </li>
                                                 </ul>
@@ -102,7 +113,7 @@
                                         </td>
                                     </tr>
                                 @empty
-                                    {{-- KOSONGIN aja biar DataTables handle --}}
+                                    {{-- Bagian datables handle --}}
                                 @endforelse
                             </tbody>
                         </table>
@@ -215,5 +226,11 @@
                 }
             });
         }
+        document.addEventListener('DOMContentLoaded', function() {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            tooltipTriggerList.map(function(tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            })
+        });
     </script>
 @endsection
