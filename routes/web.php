@@ -49,7 +49,7 @@ Route::middleware(['auth:admin', 'role:petugas'])->group(function () {
     ->name('peminjaman.acc');
     Route::get('/peminjaman/show/{id}', [PeminjamanBackendController::class, 'show'])
     ->name('peminjaman.show');
-    Route::get('/peminjaman/konfirmasi-kembali/{id}', [PeminjamanBackendController::class, 'konfirmasiKembali'])
+   Route::post('/peminjaman/{id}/konfirmasi-kembali', [PeminjamanBackendController::class, 'konfirmasiKembali'])
     ->name('peminjaman.konfirmasiKembali');
     Route::get('/peminjaman/tolak-kembali/{id}', [PeminjamanBackendController::class, 'tolakKembali'])
     ->name('peminjaman.tolakKembali');

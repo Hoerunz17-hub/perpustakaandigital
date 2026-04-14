@@ -72,9 +72,31 @@
                                             @if ($pinjams->status == 'ditolak')
                                                 -
                                             @else
-                                                {{ optional($pinjams->pengembalian)->denda
-                                                    ? 'Rp ' . number_format(optional($pinjams->pengembalian)->denda, 0, ',', '.')
-                                                    : '-' }}
+                                                @php
+                                                    $wajib = $pinjams->wajib_kembali
+                                                        ? \Carbon\Carbon::parse($pinjams->wajib_kembali)
+                                                        : null;
+
+                                                    $kembali = $pinjams->pengembalian
+                                                        ? \Carbon\Carbon::parse($pinjams->pengembalian->tanggal_kembali)
+                                                        : now();
+
+                                                    $telatHari =
+                                                        $wajib && $kembali->gt($wajib)
+                                                            ? $wajib->startOfDay()->diffInDays($kembali->startOfDay())
+                                                            : 0;
+
+                                                    $dendaTelat = $telatHari * 1000;
+
+                                                    $dendaKondisi = optional($pinjams->pengembalian)->denda ?? 0;
+
+                                                    $total =
+                                                        $pinjams->status == 'dikembalikan'
+                                                            ? $dendaTelat + $dendaKondisi
+                                                            : $dendaTelat;
+                                                @endphp
+
+                                                {{ $total > 0 ? 'Rp ' . number_format($total, 0, ',', '.') : '-' }}
                                             @endif
                                         </td>
                                         <td class="text-nowrap">
@@ -156,6 +178,7 @@
                                                 <div class="modal-body">
                                                     Yakin mau konfirmasi peminjaman buku
                                                     <b>{{ $pinjams->buku->judul_buku ?? '-' }}</b> ?
+
                                                 </div>
 
                                                 <div class="modal-footer">
@@ -178,34 +201,56 @@
                                     </div>
                                     <div class="modal fade" id="modalKembali{{ $pinjams->id_peminjaman }}" tabindex="-1">
                                         <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title">Konfirmasi Pengembalian</h5>
-                                                    <button type="button" class="btn-close"
-                                                        data-bs-dismiss="modal"></button>
+                                            <form
+                                                action="{{ route('peminjaman.konfirmasiKembali', $pinjams->id_peminjaman) }}"
+                                                method="POST">
+                                                @csrf
+
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Konfirmasi Pengembalian</h5>
+                                                        <button type="button" class="btn-close"
+                                                            data-bs-dismiss="modal"></button>
+                                                    </div>
+
+                                                    <div class="modal-body">
+
+                                                        <p>Buku <b>{{ $pinjams->buku->judul_buku ?? '-' }}</b> sudah
+                                                            dikembalikan?</p>
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Denda</label>
+                                                            <input type="text"
+                                                                id="dendaDisplay{{ $pinjams->id_peminjaman }}"
+                                                                class="form-control" value="Rp 0" readonly>
+                                                        </div>
+                                                        <!-- PILIH KONDISI -->
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Kondisi Buku</label>
+                                                            <select name="kondisi_buku"
+                                                                id="kondisi{{ $pinjams->id_peminjaman }}"
+                                                                class="form-control kondisi-select" required>
+                                                                <option value="normal">Normal</option>
+                                                                <option value="rusak">Rusak (Denda 50.000)</option>
+                                                                <option value="hilang">Hilang (Denda 100.000)</option>
+                                                            </select>
+                                                        </div>
+
+                                                    </div>
+
+                                                    <div class="modal-footer">
+
+                                                        <a href="{{ route('peminjaman.tolakKembali', $pinjams->id_peminjaman) }}"
+                                                            class="btn btn-danger">
+                                                            Tolak
+                                                        </a>
+
+                                                        <button type="submit" class="btn btn-success">
+                                                            Konfirmasi
+                                                        </button>
+
+                                                    </div>
                                                 </div>
-
-                                                <div class="modal-body">
-                                                    Yakin buku <b>{{ $pinjams->buku->judul_buku ?? '-' }}</b> sudah
-                                                    dikembalikan?
-                                                </div>
-
-                                                <div class="modal-footer">
-
-                                                    <!-- TOLAK -->
-                                                    <a href="{{ route('peminjaman.tolakKembali', $pinjams->id_peminjaman) }}"
-                                                        class="btn btn-danger">
-                                                        Tolak
-                                                    </a>
-
-                                                    <!-- KONFIRMASI -->
-                                                    <a href="{{ route('peminjaman.konfirmasiKembali', $pinjams->id_peminjaman) }}"
-                                                        class="btn btn-success">
-                                                        Konfirmasi
-                                                    </a>
-
-                                                </div>
-                                            </div>
+                                            </form>
                                         </div>
                                     </div>
                                 @empty
@@ -269,6 +314,32 @@
                     }
                 });
             });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            document.querySelectorAll('.kondisi-select').forEach(function(select) {
+
+                select.addEventListener('change', function() {
+
+                    let id = this.id.replace('kondisi', '');
+                    let dendaInput = document.getElementById('dendaDisplay' + id);
+
+                    let denda = 0;
+
+                    if (this.value === 'rusak') {
+                        denda = 50000;
+                    } else if (this.value === 'hilang') {
+                        denda = 100000;
+                    }
+
+                    // format ke rupiah
+                    dendaInput.value = 'Rp ' + denda.toLocaleString('id-ID');
+                });
+
+            });
+
         });
     </script>
 @endsection

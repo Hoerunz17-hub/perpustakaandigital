@@ -100,28 +100,52 @@ if (!$petugas) {
 
     return back()->with('success', 'Peminjaman ditolak');
 }
-public function konfirmasiKembali($id)
+public function konfirmasiKembali(Request $request, $id)
 {
+    $request->validate([
+        'kondisi_buku' => 'required|in:normal,rusak,hilang'
+    ]);
+
     $peminjaman = Peminjaman::with('buku')->findOrFail($id);
 
-    DB::transaction(function () use ($peminjaman) {
+    DB::transaction(function () use ($peminjaman, $request) {
 
-        // ubah status jadi dikembalikan
+        $kondisi = $request->kondisi_buku;
+        $denda = 0;
+
+        if ($kondisi == 'rusak') {
+            $denda = 50000;
+        } elseif ($kondisi == 'hilang') {
+            $denda = 100000;
+        }
+
+        $status = now() > $peminjaman->wajib_kembali ? 'terlambat' : 'tepat_waktu';
+
+        // ✅ insert manual (AMAN)
+        DB::table('pengembalian')->insert([
+            'id_peminjaman'   => $peminjaman->id_peminjaman,
+            'id_petugas'      => Auth::user()->petugas->id_petugas ?? 1,
+            'tanggal_kembali' => now(),
+            'kondisi_buku'    => $kondisi,
+            'denda'           => $denda,
+            'status'          => $status,
+            'created_at'      => now(),
+            'updated_at'      => now(),
+        ]);
+
+        // update status
         $peminjaman->update([
             'status' => 'dikembalikan'
         ]);
 
-        // tambah stok buku
-       if ($peminjaman->buku) {
-    $kondisi = optional($peminjaman->pengembalian)->kondisi_buku;
+        // stok
+        if ($kondisi !== 'hilang') {
+            $peminjaman->buku->increment('stock');
+        }
 
-    if ($kondisi != 'hilang') {
-        $peminjaman->buku->increment('stock');
-    }
-}
     });
 
-    return back()->with('success', 'Pengembalian dikonfirmasi');
+    return back()->with('success', 'Pengembalian berhasil');
 }
 public function tolakKembali($id)
 {
@@ -167,6 +191,7 @@ public function destroy($id)
 
     return back()->with('success', 'Data berhasil dihapus');
 }
+
 public function struk($id)
 {
     $first = Peminjaman::with(['anggota', 'buku', 'pengembalian'])
@@ -179,7 +204,7 @@ public function struk($id)
     //  pakai created_at (waktu real)
     $waktu = \Carbon\Carbon::parse(optional($first->pengembalian)->created_at);
 
-    //  range 1 menit (AMAN)
+
     $start = $waktu->copy()->subMinute();
     $end   = $waktu->copy()->addMinute();
 

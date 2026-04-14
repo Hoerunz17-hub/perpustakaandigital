@@ -134,10 +134,10 @@
                                   @if ($peminjaman->status == 'menunggu_pengembalian')
                                       <div class="d-flex justify-content-md-end gap-2">
 
-                                          <a href="{{ route('peminjaman.konfirmasiKembali', $peminjaman->id_peminjaman) }}"
-                                              class="btn btn-primary btn-sm">
+                                          <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                              data-bs-target="#modalKembaliDetail{{ $peminjaman->id_peminjaman }}">
                                               Konfirmasi
-                                          </a>
+                                          </button>
 
                                           <a href="{{ route('peminjaman.tolakKembali', $peminjaman->id_peminjaman) }}"
                                               class="btn btn-outline-danger btn-sm">
@@ -169,7 +169,7 @@
                                   : Carbon::today();
 
                               // 🔥 TELAT HARI
-                              $telatHari = $kembali->gt($wajib) ? $wajib->diffInDays($kembali) : 0;
+                              $telatHari = $kembali->gt($wajib) ? (int) $wajib->diffInDays($kembali) : 0;
 
                               // 🔥 DENDA TELAT (misal 1000/hari)
                               $dendaPerHari = 1000;
@@ -183,7 +183,7 @@
                               if ($kondisi == 'rusak') {
                                   $dendaRusak = 50000;
                               } elseif ($kondisi == 'hilang') {
-                                  $dendaRusak = 30000;
+                                  $dendaRusak = 100000;
                               }
 
                               // 🔥 TOTAL DENDA
@@ -377,8 +377,86 @@
                   <a href="/petugas/peminjaman" class="btn btn-secondary btn-sm">
                       ← Kembali
                   </a>
+                  <div class="modal fade" id="modalKembaliDetail{{ $peminjaman->id_peminjaman }}" tabindex="-1">
+                      <div class="modal-dialog">
+                          <form action="{{ route('peminjaman.konfirmasiKembali', $peminjaman->id_peminjaman) }}"
+                              method="POST">
+                              @csrf
 
+                              <div class="modal-content">
+                                  <div class="modal-header">
+                                      <h5 class="modal-title">Konfirmasi Pengembalian</h5>
+                                      <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                  </div>
+
+                                  <div class="modal-body">
+
+                                      <p>
+                                          Buku <b>{{ $peminjaman->buku->judul_buku ?? '-' }}</b> sudah dikembalikan?
+                                      </p>
+
+                                      {{-- KONDISI --}}
+                                      <div class="mb-3">
+                                          <label class="form-label">Kondisi Buku</label>
+                                          <select name="kondisi_buku" id="kondisiDetail{{ $peminjaman->id_peminjaman }}"
+                                              class="form-control kondisi-detail-select" required>
+                                              <option value="normal">Normal</option>
+                                              <option value="rusak">Rusak (50.000)</option>
+                                              <option value="hilang">Hilang (100.000)</option>
+                                          </select>
+                                      </div>
+
+                                      {{-- DENDA --}}
+                                      <div class="mb-3">
+                                          <label class="form-label">Denda</label>
+                                          <input type="text" id="dendaDetail{{ $peminjaman->id_peminjaman }}"
+                                              class="form-control" value="Rp 0" readonly>
+                                      </div>
+
+                                  </div>
+
+                                  <div class="modal-footer">
+                                      <a href="{{ route('peminjaman.tolakKembali', $peminjaman->id_peminjaman) }}"
+                                          class="btn btn-danger">
+                                          Tolak
+                                      </a>
+
+                                      <button type="submit" class="btn btn-success">
+                                          Konfirmasi
+                                      </button>
+                                  </div>
+
+                              </div>
+                          </form>
+                      </div>
+                  </div>
               </div>
           </section>
       </div>
+
+      <script>
+          document.addEventListener('DOMContentLoaded', function() {
+
+              document.querySelectorAll('.kondisi-detail-select').forEach(function(select) {
+
+                  select.addEventListener('change', function() {
+
+                      let id = this.id.replace('kondisiDetail', '');
+                      let dendaInput = document.getElementById('dendaDetail' + id);
+
+                      let denda = 0;
+
+                      if (this.value === 'rusak') {
+                          denda = 50000;
+                      } else if (this.value === 'hilang') {
+                          denda = 100000;
+                      }
+
+                      dendaInput.value = 'Rp ' + denda.toLocaleString('id-ID');
+                  });
+
+              });
+
+          });
+      </script>
   @endsection
