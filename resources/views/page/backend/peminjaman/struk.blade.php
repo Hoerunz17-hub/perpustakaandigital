@@ -50,18 +50,6 @@
             text-align: right;
         }
 
-        .status {
-            font-weight: bold;
-        }
-
-        .terlambat {
-            color: rgb(0, 0, 0);
-        }
-
-        .normal {
-            color: black;
-        }
-
         .footer {
             margin-top: 8px;
             text-align: center;
@@ -83,78 +71,96 @@
     <!-- INFO UTAMA -->
     <table>
         <tr>
-            <td class="label">No Peminjaman</td>
-            <td class="value">#{{ $data->id_peminjaman }}</td>
-        </tr>
-        <tr>
             <td class="label">Nama Anggota</td>
-            <td class="value">{{ $data->anggota->nama_anggota }}</td>
+            <td class="value">{{ $anggota->nama_anggota }}</td>
         </tr>
         <tr>
             <td class="label">Petugas</td>
-            <td class="value"> {{ $data->petugas->nama_petugas ?? '-' }}</td>
+            <td class="value">{{ $petugas }}</td>
         </tr>
     </table>
 
     <div class="line"></div>
 
-    <!-- DETAIL BUKU -->
+    <!-- DETAIL BUKU (MULTI) -->
     <table>
-        <tr>
-            <td class="label">Judul Buku</td>
-            <td class="value">{{ $data->buku->judul_buku }}</td>
-        </tr>
-        <tr>
-            <td class="label">Kode Buku</td>
-            <td class="value">{{ $data->buku->kode_buku }}</td>
-        </tr>
-        <tr>
-            <td class="label">Tanggal Pinjam</td>
-            <td class="value">
-                {{ \Carbon\Carbon::parse($data->tanggal_pinjam)->translatedFormat('d F Y') }}
-            </td>
-        </tr>
-        <tr>
-            <td class="label">Wajib Kembali</td>
-            <td class="value">
-                {{ \Carbon\Carbon::parse($data->wajib_kembali)->translatedFormat('d F Y') }}
-            </td>
-        </tr>
-        <tr>
-            <td class="label">Tanggal Kembali</td>
-            <td class="value">
-                {{ \Carbon\Carbon::parse($data->pengembalian->tanggal_kembali)->translatedFormat('d F Y') }}
-            </td>
-        </tr>
+        @foreach ($data as $item)
+            <tr>
+                <td class="label">Judul</td>
+                <td class="value">{{ $item->buku->judul_buku }}</td>
+            </tr>
+            <tr>
+                <td class="label">Kode</td>
+                <td class="value">{{ $item->buku->kode_buku }}</td>
+            </tr>
+            <tr>
+                <td class="label">Pinjam</td>
+                <td class="value">
+                    {{ \Carbon\Carbon::parse($item->tanggal_pinjam)->translatedFormat('d F Y') }}
+                </td>
+            </tr>
+            <tr>
+                <td class="label">Kembali</td>
+                <td class="value">
+                    {{ \Carbon\Carbon::parse($item->pengembalian->tanggal_kembali)->translatedFormat('d F Y') }}
+                </td>
+            </tr>
+
+            <tr>
+                <td class="label">Kondisi & Denda</td>
+                <td class="value">
+                    @php
+                        $kondisi = $item->pengembalian->kondisi_buku ?? null;
+                        $denda = $item->pengembalian->denda ?? 0;
+                    @endphp
+
+                    @if (!$kondisi)
+                        -
+                    @else
+                        @if ($kondisi == 'baik')
+                            Baik
+                        @elseif ($kondisi == 'rusak')
+                            Rusak
+                        @elseif ($kondisi == 'hilang')
+                            Hilang
+                        @else
+                            {{ ucfirst($kondisi) }}
+                        @endif
+
+                        @if ($denda > 0)
+                            (Rp {{ number_format($denda, 0, ',', '.') }})
+                        @endif
+                    @endif
+                </td>
+            </tr>
+            </tr>
+
+            <tr>
+                <td colspan="2">--------------------------</td>
+            </tr>
+        @endforeach
     </table>
 
     <div class="line"></div>
 
-    <!-- DENDA -->
+    <!-- TOTAL DENDA -->
+    @php
+        $totalDenda = $data->sum(function ($item) {
+            return $item->pengembalian->denda ?? 0;
+        });
+    @endphp
+
     <table>
         <tr>
-            <td class="label">Denda</td>
+            <td class="label"><strong>Total Denda</strong></td>
             <td class="value">
-                @if (!$data->pengembalian || $data->pengembalian->denda == 0)
-                    -
-                @else
-                    Rp {{ number_format($data->pengembalian->denda, 0, ',', '.') }}
-                @endif
-            </td>
-        </tr>
-        <tr>
-            <td class="label">Status</td>
-            <td
-                class="value status
-                @if ($data->pengembalian && $data->pengembalian->status == 'terlambat') terlambat
-                @else
-                    normal @endif
-            ">
-                @if ($data->pengembalian && $data->pengembalian->status == 'terlambat')
-                    TERLAMBAT
-                @else
-                    DIKEMBALIKAN
-                @endif
+                <strong>
+                    @if ($totalDenda == 0)
+                        -
+                    @else
+                        Rp {{ number_format($totalDenda, 0, ',', '.') }}
+                    @endif
+                </strong>
             </td>
         </tr>
     </table>

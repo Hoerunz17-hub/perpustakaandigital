@@ -98,22 +98,21 @@
                             <div class="card-inner">
                                 <div class="loan-cover-wrapper">
                                     <div class="loan-status-overlay">
-                                        @if ($isPengembalianDitolak)
-                                            <span class="luminous-badge badge-ditolak">Return Ditolak</span>
-                                        @elseif ($isPeminjamanDitolak)
-                                            <span class="luminous-badge badge-ditolak">Pinjam Ditolak</span>
-                                        @elseif ($pinjam->status == 'menunggu_pengembalian')
-                                            <span class="luminous-badge badge-menunggu">Menunggu Konfirmasi</span>
-                                        @else
-                                            @if ($selisih < 0)
-                                                <span class="luminous-badge badge-terlambat pulse-danger">Terlambat</span>
-                                            @elseif ($selisih == 0)
-                                                <span class="luminous-badge badge-warning text-white">Terakhir Hari
-                                                    Ini</span>
-                                            @elseif ($selisih == 1)
-                                                <span class="luminous-badge badge-warning text-white">Sisa 1 Hari</span>
-                                            @else
-                                                <span class="luminous-badge badge-kembali">Sedang Dibaca</span>
+                                        @if ($pinjam->status == 'dikembalikan')
+                                            @if ($pinjam->pengembalian)
+                                                @if ($pinjam->pengembalian->status == 'ditolak')
+                                                    <span class="luminous-badge badge-ditolak">Return Ditolak</span>
+                                                @elseif ($pinjam->pengembalian->kondisi_buku == 'hilang')
+                                                    <span class="luminous-badge badge-ditolak">Buku Hilang</span>
+                                                @elseif ($pinjam->pengembalian->kondisi_buku == 'rusak' && $pinjam->pengembalian->status == 'terlambat')
+                                                    <span class="luminous-badge badge-warning">Rusak & Terlambat</span>
+                                                @elseif ($pinjam->pengembalian->kondisi_buku == 'rusak')
+                                                    <span class="luminous-badge badge-warning">Buku Rusak</span>
+                                                @elseif ($pinjam->pengembalian->status == 'terlambat')
+                                                    <span class="luminous-badge badge-terlambat">Terlambat</span>
+                                                @else
+                                                    <span class="luminous-badge badge-kembali">Dikembalikan</span>
+                                                @endif
                                             @endif
                                         @endif
                                     </div>
@@ -210,16 +209,44 @@
                                     <div class="status-overlay">
                                         @if ($item->status == 'ditolak')
                                             <span class="luminous-badge badge-ditolak">Ditolak</span>
-                                        @elseif ($item->status == 'dikembalikan')
-                                            @if ($item->pengembalian && $item->pengembalian->status == 'ditolak')
+                                        @elseif ($item->status == 'menunggu_pengembalian')
+                                            <span class="luminous-badge badge-menunggu">Menunggu Konfirmasi</span>
+                                        @elseif ($item->status == 'dikembalikan' && $item->pengembalian)
+                                            @php
+                                                $kondisi = $item->pengembalian->kondisi_buku;
+                                                $statusKembali = $item->pengembalian->status;
+
+                                                $isRusak = $kondisi == 'rusak';
+                                                $isHilang = $kondisi == 'hilang';
+                                                $isTerlambat = $statusKembali == 'terlambat';
+                                            @endphp
+
+                                            @if ($statusKembali == 'ditolak')
                                                 <span class="luminous-badge badge-ditolak">Return Ditolak</span>
-                                            @elseif ($item->pengembalian && $item->pengembalian->status == 'terlambat')
-                                                <span class="luminous-badge badge-terlambat">Terlambat</span>
+
+                                                {{--  TERLAMBAT --}}
+                                            @elseif ($isTerlambat)
+                                                <span class="luminous-badge badge-terlambat">
+                                                    @if ($isHilang)
+                                                        Hilang
+                                                    @elseif ($isRusak)
+                                                        Rusak
+                                                    @endif
+                                                    & Terlambat
+                                                </span>
+
+                                                {{--  HILANG --}}
+                                            @elseif ($isHilang)
+                                                <span class="luminous-badge badge-ditolak">Buku Hilang</span>
+
+                                                {{--  RUSAK --}}
+                                            @elseif ($isRusak)
+                                                <span class="luminous-badge badge-warning">Buku Rusak</span>
+
+                                                {{--  NORMAL --}}
                                             @else
                                                 <span class="luminous-badge badge-kembali">Dikembalikan</span>
                                             @endif
-                                        @elseif ($item->status == 'menunggu_pengembalian')
-                                            <span class="luminous-badge badge-menunggu">Menunggu Konfirmasi</span>
                                         @endif
                                     </div>
                                 </div>
@@ -250,9 +277,42 @@
 
                                     @if ($item->pengembalian && $item->pengembalian->denda > 0)
                                         <div class="fine-banner-premium">
+
                                             <div class="fine-pulse"></div>
-                                            <span class="fine-text">Denda: Rp
-                                                {{ number_format($item->pengembalian->denda, 0, ',', '.') }}</span>
+
+                                            <div class="d-flex flex-column">
+                                                {{-- KETERANGAN --}}
+                                                <span class="fine-text">
+                                                    @php
+                                                        $kondisi = $item->pengembalian->kondisi_buku ?? null;
+                                                        $statusKembali = $item->pengembalian->status ?? null;
+
+                                                        $isRusak = $kondisi == 'rusak';
+                                                        $isHilang = $kondisi == 'hilang';
+                                                        $isTerlambat = $statusKembali == 'terlambat';
+                                                    @endphp
+
+                                                    @if ($isHilang)
+                                                        Hilang
+                                                    @elseif ($isRusak)
+                                                        Rusak
+                                                    @endif
+
+                                                    @if ($isTerlambat)
+                                                        & Terlambat
+                                                    @endif
+
+                                                    @if (!$isRusak && !$isHilang && !$isTerlambat)
+                                                        Denda
+                                                    @endif
+                                                </span>
+
+                                                {{-- NOMINAL --}}
+                                                <small class="text-danger fw-bold">
+                                                    Rp {{ number_format($item->pengembalian->denda, 0, ',', '.') }}
+                                                </small>
+                                            </div>
+
                                         </div>
                                     @endif
                                 </div>

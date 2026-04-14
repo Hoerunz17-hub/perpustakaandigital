@@ -112,9 +112,13 @@ public function konfirmasiKembali($id)
         ]);
 
         // tambah stok buku
-        if ($peminjaman->buku) {
-            $peminjaman->buku->increment('stock');
-        }
+       if ($peminjaman->buku) {
+    $kondisi = optional($peminjaman->pengembalian)->kondisi_buku;
+
+    if ($kondisi != 'hilang') {
+        $peminjaman->buku->increment('stock');
+    }
+}
     });
 
     return back()->with('success', 'Pengembalian dikonfirmasi');
@@ -165,23 +169,36 @@ public function destroy($id)
 }
 public function struk($id)
 {
-    $data = Peminjaman::with(['anggota', 'buku', 'pengembalian'])
+    $first = Peminjaman::with(['anggota', 'buku', 'pengembalian'])
         ->findOrFail($id);
 
-    if ($data->status != 'dikembalikan') {
-        return redirect()->back()->with('error', 'Struk hanya tersedia setelah buku dikembalikan!');
+    if ($first->status != 'dikembalikan') {
+        return back()->with('error', 'Struk hanya setelah dikembalikan!');
     }
 
+    //  pakai created_at (waktu real)
+    $waktu = \Carbon\Carbon::parse(optional($first->pengembalian)->created_at);
 
-   $petugas = Auth::user()->name ?? '-';  // ambil petugas
+    //  range 1 menit (AMAN)
+    $start = $waktu->copy()->subMinute();
+    $end   = $waktu->copy()->addMinute();
 
-$pdf = Pdf::loadView('page.backend.peminjaman.struk', [
-    'data' => $data,
-    'petugas' => $petugas
-])
-->setPaper([0, 0, 226.77, 600], 'portrait');
-        // 226px ≈ 80mm (struk kasir)
+    $data = Peminjaman::with(['anggota', 'buku', 'pengembalian'])
+        ->where('id_anggota', $first->id_anggota)
+        ->where('status', 'dikembalikan')
+        ->whereHas('pengembalian', function ($q) use ($start, $end) {
+            $q->whereBetween('created_at', [$start, $end]);
+        })
+        ->get();
 
-    return $pdf->stream('struk-peminjaman.pdf');
+    $petugas = optional(Auth::user()->petugas)->nama_petugas ?? '-';
+
+    $pdf = Pdf::loadView('page.backend.peminjaman.struk', [
+        'data' => $data,
+        'anggota' => $first->anggota,
+        'petugas' => $petugas
+    ])->setPaper([0, 0, 226.77, 800], 'portrait');
+
+    return $pdf->stream('struk.pdf');
 }
 }

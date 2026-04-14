@@ -121,12 +121,14 @@
                                                     </li>
                                                     @if ($pinjams->status == 'dikembalikan')
                                                         <li>
-                                                            <a class="dropdown-item d-flex align-items-center gap-2"
-                                                                href="{{ route('peminjaman.struk', $pinjams->id_peminjaman) }}"
-                                                                target="_blank">
-                                                                <i class="fas fa-print"></i>
-                                                                <span>Cetak Struk</span>
-                                                            </a>
+                                                            @if ($pinjams->pengembalian)
+                                                                <a href="{{ route('peminjaman.struk', $pinjams->id_peminjaman) }}"
+                                                                    target="_blank"
+                                                                    class="dropdown-item d-flex align-items-center gap-2">
+                                                                    <i class="fas fa-print"></i>
+                                                                    <span>Cetak Struk</span>
+                                                                </a>
+                                                            @endif
                                                         </li>
                                                     @endif
                                                     <li>
