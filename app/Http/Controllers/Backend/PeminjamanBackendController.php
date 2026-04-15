@@ -110,14 +110,29 @@ public function konfirmasiKembali(Request $request, $id)
 
     DB::transaction(function () use ($peminjaman, $request) {
 
-        $kondisi = $request->kondisi_buku;
-        $denda = 0;
+      $kondisi = $request->kondisi_buku;
+$denda = 0;
 
-        if ($kondisi == 'rusak') {
-            $denda = 50000;
-        } elseif ($kondisi == 'hilang') {
-            $denda = 100000;
-        }
+// 🔥 DENDA KONDISI
+if ($kondisi == 'rusak') {
+    $denda += 50000;
+} elseif ($kondisi == 'hilang') {
+    $denda += 100000;
+}
+
+
+// 🔥 DENDA KETERLAMBATAN
+$wajib = Carbon::parse($peminjaman->wajib_kembali)->startOfDay();
+$kembali = now()->startOfDay();
+
+$telat = $kembali->gt($wajib)
+    ? $wajib->diffInDays($kembali)
+    : 0;
+
+$denda += $telat * 1000;
+
+// status tetap
+$status = now() > $peminjaman->wajib_kembali ? 'terlambat' : 'tepat_waktu';
 
         $status = now() > $peminjaman->wajib_kembali ? 'terlambat' : 'tepat_waktu';
 

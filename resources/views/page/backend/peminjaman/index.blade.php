@@ -73,30 +73,10 @@
                                                 -
                                             @else
                                                 @php
-                                                    $wajib = $pinjams->wajib_kembali
-                                                        ? \Carbon\Carbon::parse($pinjams->wajib_kembali)
-                                                        : null;
-
-                                                    $kembali = $pinjams->pengembalian
-                                                        ? \Carbon\Carbon::parse($pinjams->pengembalian->tanggal_kembali)
-                                                        : now();
-
-                                                    $telatHari =
-                                                        $wajib && $kembali->gt($wajib)
-                                                            ? $wajib->startOfDay()->diffInDays($kembali->startOfDay())
-                                                            : 0;
-
-                                                    $dendaTelat = $telatHari * 1000;
-
-                                                    $dendaKondisi = optional($pinjams->pengembalian)->denda ?? 0;
-
-                                                    $total =
-                                                        $pinjams->status == 'dikembalikan'
-                                                            ? $dendaTelat + $dendaKondisi
-                                                            : $dendaTelat;
+                                                    $denda = optional($pinjams->pengembalian)->denda ?? 0;
                                                 @endphp
 
-                                                {{ $total > 0 ? 'Rp ' . number_format($total, 0, ',', '.') : '-' }}
+                                                {{ $denda > 0 ? 'Rp ' . number_format($denda, 0, ',', '.') : '-' }}
                                             @endif
                                         </td>
                                         <td class="text-nowrap">
