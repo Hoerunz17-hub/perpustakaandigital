@@ -20,6 +20,10 @@
         <form method="GET" action="{{ route('laporan.index') }}" class="mb-3">
             <div class="row">
                 <div class="col-md-3">
+                    <input type="text" name="search" class="form-control" placeholder="Cari nama / buku..."
+                        value="{{ request('search') }}">
+                </div>
+                <div class="col-md-3">
                     <select name="bulan" class="form-control">
                         <option value="">-- Pilih Bulan --</option>
                         @for ($i = 1; $i <= 12; $i++)
@@ -41,13 +45,19 @@
                     </select>
                 </div>
 
+
+
                 <div class="col-md-3">
                     <button class="btn btn-primary">Filter</button>
                 </div>
 
-                <div class="col-md-3 text-end">
-                    <a href="{{ route('laporan.cetak', ['bulan' => $bulan, 'tahun' => $tahun]) }}" target="_blank"
-                        class="btn btn-success">
+                <div class="col-md-20 text-end">
+                    <a href="{{ route('laporan.cetak', [
+                        'bulan' => request('bulan'),
+                        'tahun' => request('tahun'),
+                        'search' => request('search'),
+                    ]) }}"
+                        target="_blank" class="btn btn-success">
                         🖨 Cetak PDF
                     </a>
                 </div>
@@ -61,7 +71,11 @@
                         <div>
                             Table Laporan
                         </div>
-                        <a href="{{ route('laporan.cetak', ['bulan' => request('bulan'), 'tahun' => request('tahun')]) }}"
+                        <a href="{{ route('laporan.cetak', [
+                            'bulan' => request('bulan'),
+                            'tahun' => request('tahun'),
+                            'search' => request('search'),
+                        ]) }}"
                             target="_blank" class="btn btn-primary">
                             <iconify-icon icon="mdi:printer" width="20" height="20"></iconify-icon>
                         </a>
@@ -139,4 +153,17 @@
 
         </section>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof $ !== 'undefined') {
+                $('#table1').DataTable({
+                    destroy: true,
+                    language: {
+                        emptyTable: "Tidak Ada Laporan"
+                    }
+                });
+            }
+        });
+    </script>
 @endsection

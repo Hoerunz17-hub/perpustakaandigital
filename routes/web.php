@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 
 //
 // ==============================
-// 🔐 AUTH
+//  AUTH login backend
 // ==============================
 //
 Route::get('/login', [AuthControllerBackendController::class, 'login'])->name('login');
@@ -26,7 +26,7 @@ Route::post('/login', [AuthControllerBackendController::class, 'prosesLogin'])->
 
 //
 // ==============================
-// 🔒 BACKEND - PETUGAS
+//  BACKEND - PETUGAS
 // ==============================
 //
 Route::middleware(['auth:admin', 'role:petugas'])->group(function () {
@@ -63,7 +63,7 @@ Route::get('/peminjaman/tolak/{id}', [PeminjamanBackendController::class, 'tolak
 });
 //
 // ==============================
-// 🔒 BACKEND - KEPALA PERPUS
+//  BACKEND - KEPALA PERPUS
 // ==============================
 //
 
@@ -90,14 +90,14 @@ Route::get('/laporan/cetak', [laporanBackendController::class, 'cetak'])->name('
 
 //
 // ==============================
-// 🔓 LOGOUT
+//  LOGOUT
 // ==============================
 //
 Route::post('/logout', [AuthControllerBackendController::class, 'logout'])->name('logout');
 
 //
 // ==============================
-// 🌐 FRONTEND
+//  FRONTEND
 // ==============================
 //
 
@@ -109,6 +109,13 @@ Route::get('/anggota/peminjaman', [PeminjamanFrontendController::class, 'index']
 Route::post('/anggota/peminjaman/store', [PeminjamanFrontendController::class, 'store']);
 Route::get('/anggota/pengembalian', [PengembalianFrontendController::class, 'index']);
 Route::post('/anggota/pengembalian/store', [PengembalianFrontendController::class, 'store']);
+
+
+//
+// ==============================
+//  Auth Login FRONTEND
+// ==============================
+//
 
 Route::post('/loginuser', [AuthControllerFrontendController::class, 'prosesLogin'])->name('login.anggota');
 Route::get('/loginuser', [AuthControllerFrontendController::class, 'login']);

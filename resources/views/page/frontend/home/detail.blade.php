@@ -83,7 +83,7 @@
                                 </a>
                             @endauth
 
-                            <a href="" class="btn-kembali">
+                            <a href="/" class="btn-kembali">
                                 ← Kembali
                             </a>
                         </div>
