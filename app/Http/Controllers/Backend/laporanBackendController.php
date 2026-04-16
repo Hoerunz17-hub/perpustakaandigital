@@ -9,13 +9,14 @@ use Illuminate\Http\Request;
 
 class laporanBackendController extends Controller
 {
-  public function index(Request $request)
+ public function index(Request $request)
 {
     $bulan = $request->bulan;
     $tahun = $request->tahun;
+    $search = $request->search;
 
     $query = Peminjaman::with(['anggota', 'buku', 'pengembalian']);
-
+    // bulan dan tahun
     if ($bulan) {
         $query->whereMonth('tanggal_pinjam', $bulan);
     }
@@ -24,9 +25,21 @@ class laporanBackendController extends Controller
         $query->whereYear('tanggal_pinjam', $tahun);
     }
 
+    // search
+    if ($search) {
+        $query->where(function ($q) use ($search) {
+            $q->whereHas('anggota', function ($q2) use ($search) {
+                $q2->where('nama_anggota', 'like', "%$search%");
+            })
+            ->orWhereHas('buku', function ($q3) use ($search) {
+                $q3->where('judul_buku', 'like', "%$search%");
+            });
+        });
+    }
+
     $data = $query->get();
 
-    // ✅ TAMBAHAN LOGIC STATUS
+
     foreach ($data as $item) {
         $status = $item->status;
         $pengembalian = $item->pengembalian;
@@ -42,13 +55,14 @@ class laporanBackendController extends Controller
         }
     }
 
-    return view('page.backend.laporan.index', compact('data', 'bulan', 'tahun'));
+    return view('page.backend.laporan.index', compact('data', 'bulan', 'tahun', 'search'));
 }
 
 public function cetak(Request $request)
 {
     $bulan = $request->bulan;
     $tahun = $request->tahun;
+    $search = $request->search;
 
     $query = Peminjaman::with(['anggota', 'buku', 'pengembalian']);
 
@@ -60,9 +74,21 @@ public function cetak(Request $request)
         $query->whereYear('tanggal_pinjam', $tahun);
     }
 
+    //  SEARCH
+    if ($search) {
+        $query->where(function ($q) use ($search) {
+            $q->whereHas('anggota', function ($q2) use ($search) {
+                $q2->where('nama_anggota', 'like', "%$search%");
+            })
+            ->orWhereHas('buku', function ($q3) use ($search) {
+                $q3->where('judul_buku', 'like', "%$search%");
+            });
+        });
+    }
+
     $data = $query->get();
 
-    // ✅ LOGIC YANG SAMA
+    // logic data bulan tahun
     foreach ($data as $item) {
         $status = $item->status;
         $pengembalian = $item->pengembalian;
@@ -78,8 +104,8 @@ public function cetak(Request $request)
         }
     }
 
-   $pdf = Pdf::loadView('page.backend.laporan.laporanpdf', compact('data', 'bulan', 'tahun'));
+    $pdf = Pdf::loadView('page.backend.laporan.laporanpdf', compact('data', 'bulan', 'tahun', 'search'));
 
-   return $pdf->stream('laporan.pdf');
+    return $pdf->stream('laporan.pdf');
 }
 }
