@@ -72,11 +72,52 @@ if (!$petugas) {
 }
 
     $peminjaman->update([
-        'status' => 'ditolak',
-        'id_petugas' => $petugas->id_petugas
-    ]);
+    'status' => 'ditolak_peminjaman',
+    'id_petugas' => $petugas->id_petugas
+]);
 
     return back()->with('success', 'Peminjaman ditolak');
+}
+public function konfirmasiKembali($id)
+{
+    $peminjaman = Peminjaman::with('buku')->findOrFail($id);
+
+    DB::transaction(function () use ($peminjaman) {
+
+        // ubah status jadi dikembalikan
+        $peminjaman->update([
+            'status' => 'dikembalikan'
+        ]);
+
+        // tambah stok buku
+        if ($peminjaman->buku) {
+            $peminjaman->buku->increment('stock');
+        }
+    });
+
+    return back()->with('success', 'Pengembalian dikonfirmasi');
+}
+public function tolakKembali($id)
+{
+    $peminjaman = Peminjaman::with('pengembalian')->findOrFail($id);
+
+    DB::transaction(function () use ($peminjaman) {
+
+        // ✅ status peminjaman tetap DIPINJAM
+        $peminjaman->update([
+            'status' => 'dipinjam'
+        ]);
+
+        // ✅ status pengembalian HARUS ditolak
+        if ($peminjaman->pengembalian) {
+            $peminjaman->pengembalian->update([
+                'status' => 'ditolak'
+            ]);
+        }
+
+    });
+
+    return back()->with('success', 'Pengembalian ditolak');
 }
 
 public function show($id)

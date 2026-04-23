@@ -127,21 +127,22 @@
 
                                         <td>
                                             @php
-                                                $status = optional($item->pengembalian)->status ?? $item->status;
+                                                $statusPinjam = $item->status;
+                                                $statusKembali = optional($item->pengembalian)->status;
                                             @endphp
 
-                                            @if ($status == 'menunggu')
-                                                <span class="badge bg-warning">Menunggu</span>
-                                            @elseif ($status == 'dipinjam')
+                                            @if ($statusPinjam == 'dipinjam')
                                                 <span class="badge bg-primary">Dipinjam</span>
-                                            @elseif ($status == 'dikembalikan')
-                                                <span class="badge bg-success">Dikembalikan</span>
-                                            @elseif ($status == 'terlambat')
-                                                <span class="badge bg-danger">Terlambat</span>
-                                            @elseif ($status == 'ditolak')
+                                            @elseif (in_array($statusPinjam, ['menunggu_pengembalian', 'menunggu']))
+                                                <span class="badge bg-warning">Menunggu Konfirmasi</span>
+                                            @elseif ($statusPinjam == 'ditolak')
                                                 <span class="badge bg-secondary">Ditolak</span>
-                                            @elseif ($status == 'tepat_waktu')
-                                                <span class="badge bg-success">Tepat Waktu</span>
+                                            @elseif ($statusPinjam == 'dikembalikan')
+                                                @if ($statusKembali == 'terlambat')
+                                                    <span class="badge bg-danger">Terlambat</span>
+                                                @else
+                                                    <span class="badge bg-success">Tepat Waktu</span>
+                                                @endif
                                             @endif
                                         </td>
                                     </tr>

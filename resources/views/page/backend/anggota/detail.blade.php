@@ -133,6 +133,8 @@
                                                         <span class="badge bg-warning">Menunggu</span>
                                                     @elseif ($anggotas->status == 'dipinjam')
                                                         <span class="badge bg-primary">Dipinjam</span>
+                                                    @elseif ($anggotas->status == 'menunggu_pengembalian')
+                                                        <span class="badge bg-info">Menunggu Pengembalian</span>
                                                     @elseif ($anggotas->status == 'ditolak')
                                                         <span class="badge bg-danger">Ditolak</span>
                                                     @elseif ($anggotas->status == 'dikembalikan')

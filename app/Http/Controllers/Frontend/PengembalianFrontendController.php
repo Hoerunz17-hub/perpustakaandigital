@@ -17,10 +17,10 @@ public function index(Request $request)
 {
     $anggotaId = Auth::user()->anggota->id_anggota;
 
-    $peminjaman = Peminjaman::with('buku')
-        ->where('id_anggota', $anggotaId)
-        ->where('status', 'dipinjam')
-        ->get();
+   $peminjaman = Peminjaman::with('buku')
+    ->where('id_anggota', $anggotaId)
+    ->whereIn('status', ['dipinjam', 'menunggu_pengembalian', 'dikembalikan', 'ditolak'])
+    ->get();
 
     $buku = $peminjaman->pluck('buku');
 
@@ -31,7 +31,7 @@ public function index(Request $request)
     if ($selectedBuku) {
         $detailPinjam = Peminjaman::where('id_anggota', $anggotaId)
             ->where('id_buku', $selectedBuku)
-            ->where('status', 'dipinjam')
+            ->whereIn('status', ['dipinjam', 'menunggu_pengembalian'])
             ->first();
     }
 
@@ -55,7 +55,7 @@ public function index(Request $request)
 
 $peminjaman = Peminjaman::where('id_buku', $request->id_buku)
     ->where('id_anggota', $anggotaId) // ✅ BENAR
-    ->where('status', 'dipinjam')
+    ->whereIn('status', ['dipinjam', 'menunggu_pengembalian'])
     ->whereDoesntHave('pengembalian')
     ->latest()
     ->first();
@@ -86,20 +86,14 @@ $peminjaman = Peminjaman::where('id_buku', $request->id_buku)
             'status' => $status,
         ]);
 
-        // 2. update status peminjaman
-        $peminjaman->status = 'dikembalikan';
-        $peminjaman->save();
+        // 2. update status peminjaman (MENUNGGU KONFIRMASI)
+$peminjaman->status = 'menunggu_pengembalian';
+$peminjaman->save();
 
-        // 3. update stok buku
-        $buku = Buku::find($request->id_buku);
-
-if ($buku) {
-    $buku->increment('stock');
-}
 
         DB::commit();
 
-        return redirect('/bukusaya')->with('success', 'Pengembalian berhasil');
+        return redirect('/bukusaya')->with('success', 'Menunggu Konfirmasi Petugas');
 
     } catch (\Exception $e) {
         DB::rollback();

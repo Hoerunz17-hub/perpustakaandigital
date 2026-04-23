@@ -26,6 +26,7 @@ return new class extends Migration
     'menunggu',
     'dipinjam',
     'ditolak',
+    'menunggu_pengembalian',
     'dikembalikan',
     'terlambat'
 ])->default('menunggu');
