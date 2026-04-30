@@ -91,9 +91,9 @@
 
     <!-- ✅ IDENTITAS -->
     <div class="header">
-        <h2>PERPUSTAKAAN DIGITAL</h2>
-        <p>SMK NEGERI 1 (ISI SENDIRI)</p>
-        <p>Jl. Contoh Alamat No.123</p>
+        <h2>RakBuku</h2>
+        <p>PERPUSTAKAAN DIGITAL</p>
+        <p>Des.Puloerang Ka.Ciamis</p>
         <hr>
         <h3>LAPORAN PEMINJAMAN BUKU</h3>
     </div>

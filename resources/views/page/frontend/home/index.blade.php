@@ -25,7 +25,7 @@
                         <li class="tab" data-kategori="romance">romance</li>
                         <li class="tab" data-kategori="action">action</li>
                         <li class="tab" data-kategori="pendidikan">Pendidikan</li>
-                        <li class="tab" data-kategori="sejarah">sejarah</li>
+
                     </ul>
 
                     <div class="tab-content">
@@ -33,20 +33,33 @@
                             <div class="row">
                                 @foreach ($buku as $item)
                                     <div class="col-md-3 book-item" data-kategori="{{ strtolower($item->kategori) }}">
-                                        <div class="product-item">
+                                        <div class="product-item {{ $item->stock == 0 ? 'out-of-stock' : '' }}">
+
                                             <figure class="product-style">
                                                 <img src="{{ asset('storage/' . $item->cover) }}" alt="Books"
                                                     class="product-item">
-                                                <button type="button" class="add-to-cart" data-product-tile="add-to-cart"
-                                                    onclick="window.location.href='{{ url('/buku/show/' . $item->id_buku) }}'">
-                                                    Lihat detail buku
-                                                </button>
+
+                                                @if ($item->stock > 0)
+                                                    <button type="button" class="add-to-cart"
+                                                        onclick="window.location.href='{{ url('/buku/show/' . $item->id_buku) }}'">
+                                                        Lihat detail buku
+                                                    </button>
+                                                @else
+                                                    <button type="button" class="add-to-cart disabled-btn" disabled>
+                                                        Stok Habis
+                                                    </button>
+                                                    <div class="overlay">Habis</div>
+                                                @endif
                                             </figure>
+
                                             <figcaption>
                                                 <h3 class="book-title">{{ $item->judul_buku }}</h3>
                                                 <span>{{ $item->penulis }}</span>
-                                                <div class="item-price">Stock {{ $item->stock }}</div>
+                                                <div class="item-price">
+                                                    Stock {{ $item->stock }}
+                                                </div>
                                             </figcaption>
+
                                         </div>
                                     </div>
                                 @endforeach
@@ -100,6 +113,32 @@
 
         .search-box input:focus {
             outline: none;
+        }
+
+        .out-of-stock {
+            position: relative;
+            opacity: 0.6;
+        }
+
+        .out-of-stock img {
+            filter: grayscale(100%);
+        }
+
+        .disabled-btn {
+            background: #999 !important;
+            cursor: not-allowed;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: red;
+            color: white;
+            padding: 5px 10px;
+            font-size: 12px;
+            border-radius: 5px;
+            font-weight: bold;
         }
     </style>
 
