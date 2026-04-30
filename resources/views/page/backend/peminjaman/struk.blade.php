@@ -105,6 +105,31 @@
                     {{ \Carbon\Carbon::parse($item->pengembalian->tanggal_kembali)->translatedFormat('d F Y') }}
                 </td>
             </tr>
+            <tr>
+                <td class="label">Terlambat</td>
+                <td class="value">
+                    @php
+                        $telat = 0;
+                        $dendaTelat = 0;
+
+                        if ($item->wajib_kembali && $item->pengembalian->tanggal_kembali) {
+                            $wajib = \Carbon\Carbon::parse($item->wajib_kembali)->startOfDay();
+                            $kembali = \Carbon\Carbon::parse($item->pengembalian->tanggal_kembali)->startOfDay();
+
+                            $telat = $kembali->gt($wajib) ? $wajib->diffInDays($kembali) : 0;
+
+                            $dendaTelat = $telat * 1000;
+                        }
+                    @endphp
+
+                    @if ($telat > 0)
+                        {{ $telat }} hari
+                        (Rp {{ number_format($dendaTelat, 0, ',', '.') }})
+                    @else
+                        -
+                    @endif
+                </td>
+            </tr>
 
             <tr>
                 <td class="label">Kondisi & Denda</td>
@@ -112,24 +137,28 @@
                     @php
                         $kondisi = $item->pengembalian->kondisi_buku ?? null;
                         $denda = $item->pengembalian->denda ?? 0;
+
+                        // hitung telat
+                        $telat = 0;
+                        if ($item->wajib_kembali && $item->pengembalian->tanggal_kembali) {
+                            $wajib = \Carbon\Carbon::parse($item->wajib_kembali)->startOfDay();
+                            $kembali = \Carbon\Carbon::parse($item->pengembalian->tanggal_kembali)->startOfDay();
+                            $telat = $kembali->gt($wajib) ? $wajib->diffInDays($kembali) : 0;
+                        }
+
+                        $dendaTelat = $telat * 1000;
+                        $dendaKondisi = $denda - $dendaTelat;
                     @endphp
 
-                    @if (!$kondisi)
-                        -
+                    {{-- kondisi + keterangan --}}
+                    @if ($kondisi == 'baik')
+                        Baik
+                    @elseif ($kondisi == 'rusak')
+                        Rusak (Rp {{ number_format($dendaKondisi, 0, ',', '.') }})
+                    @elseif ($kondisi == 'hilang')
+                        Hilang (Rp {{ number_format($dendaKondisi, 0, ',', '.') }})
                     @else
-                        @if ($kondisi == 'baik')
-                            Baik
-                        @elseif ($kondisi == 'rusak')
-                            Rusak
-                        @elseif ($kondisi == 'hilang')
-                            Hilang
-                        @else
-                            {{ ucfirst($kondisi) }}
-                        @endif
-
-                        @if ($denda > 0)
-                            (Rp {{ number_format($denda, 0, ',', '.') }})
-                        @endif
+                        -
                     @endif
                 </td>
             </tr>

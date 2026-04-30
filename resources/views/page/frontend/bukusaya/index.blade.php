@@ -172,7 +172,8 @@
                         <div class="empty-state-luxury bg-light">
                             <i class="bi bi-journal-x display-1 text-muted mb-4"></i>
                             <h4>Tidak Ada Pinjaman Aktif</h4>
-                            <p class="text-muted">Rak buku digital Anda sedang kosong. Yuk cari bacaan menarik!</p>
+                            <p class="text-muted">Rak bu
+                                ku digital Anda sedang kosong. Yuk cari bacaan menarik!</p>
                             <a href="{{ url('/#popular-books') }}" class="btn btn-dark px-4 py-2 mt-3 rounded-pill">Lihat
                                 Katalog</a>
                         </div>
