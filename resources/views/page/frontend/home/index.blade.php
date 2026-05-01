@@ -62,92 +62,100 @@
             </button>
         </div>
     </section>
-    <section id="popular-books" class="bookshelf bg-white" style="padding-top: 100px; padding-bottom: 100px;">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-
-                    <div class="section-header align-center">
-                        <div class="title">
-                            <span>Katalog Buku</span>
-                        </div>
-
-                        <h2 class="section-title">Semua Buku</h2>
-
-                        <div class="search-wrapper mt-3">
-                            <div class="search-box">
-                                <input id="searchInput" type="text" placeholder="Cari buku...">
-                            </div>
-                        </div>
+    <section id="popular-books" class="bookshelf py-5 mt-5 bg-white">
+        <div class="container-fluid px-md-5">
+            <div class="row mb-5 align-items-center">
+                <!-- Title -->
+                <div class="col-md-4 mb-3 mb-md-0 text-center text-md-start">
+                    <span class="text-primary fw-bold mb-2 d-inline-block" style="letter-spacing: 2px; text-transform: uppercase; font-size: 0.85rem;">Eksplorasi</span>
+                    <h2 class="display-5 fw-bold mb-0 text-dark" style="font-family: 'Playfair Display', Georgia, serif;">Katalog Buku</h2>
+                </div>
+                
+                <!-- Search -->
+                <div class="col-md-8 d-flex justify-content-md-end justify-content-center">
+                    <div class="position-relative w-100" style="max-width: 400px;">
+                        <input id="searchInput" type="text" class="form-control rounded-pill px-4 py-3 border-secondary shadow-sm bg-light" placeholder="🔍 Cari judul buku...">
                     </div>
+                </div>
+            </div>
 
-                    <ul class="tabs">
-                        <li class="tab active" data-kategori="all">Semua Buku</li>
-                        <li class="tab" data-kategori="fiksi">fiksi</li>
-                        <li class="tab" data-kategori="romance">romance</li>
-                        <li class="tab" data-kategori="action">action</li>
-                        <li class="tab" data-kategori="pendidikan">Pendidikan</li>
-
+            <!-- Tabs -->
+            <div class="row mb-5">
+                <div class="col-12">
+                    <ul class="nav nav-pills justify-content-center gap-2 tabs-container list-unstyled mb-0">
+                        <li class="nav-item">
+                            <button class="btn rounded-pill px-4 py-2 tab active badge-kategori" data-kategori="all">Semua Buku</button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="btn rounded-pill px-4 py-2 tab badge-kategori" data-kategori="fiksi">Fiksi</button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="btn rounded-pill px-4 py-2 tab badge-kategori" data-kategori="romance">Romance</button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="btn rounded-pill px-4 py-2 tab badge-kategori" data-kategori="action">Action</button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="btn rounded-pill px-4 py-2 tab badge-kategori" data-kategori="pendidikan">Pendidikan</button>
+                        </li>
                     </ul>
+                </div>
+            </div>
 
-                    <div class="tab-content">
-                        <div id="all-genre" data-tab-content class="active">
-                            <div class="row">
-                                @foreach ($buku as $item)
-                                    <div class="col-md-3 book-item" data-kategori="{{ strtolower($item->kategori) }}">
-                                        <div class="product-item {{ $item->stock == 0 ? 'out-of-stock' : '' }}">
+            <!-- Books Grid -->
+            <div class="tab-content">
+                <div id="all-genre" data-tab-content class="active">
+                    <div class="row g-4 justify-content-center list-katalog-buku">
+                        @forelse ($buku as $item)
+                            <div class="col-6 col-sm-6 col-md-3 book-item" data-kategori="{{ strtolower($item->kategori) }}">
+                                <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden position-relative group-hover-container transition-hover bg-light">
+                                    
+                                    <!-- Stock Badge -->
+                                    <div class="position-absolute top-0 end-0 m-3 z-3">
+                                        @if ($item->stock > 0)
+                                            <span class="badge bg-success bg-opacity-75 text-white rounded-pill px-3 py-2 shadow-sm fw-bold" style="backdrop-filter: blur(4px);">Stok: {{ $item->stock }}</span>
+                                        @else
+                                            <span class="badge bg-danger rounded-pill px-3 py-2 shadow-sm fw-bold">Stok Habis</span>
+                                        @endif
+                                    </div>
 
-                                            <figure class="product-style">
-                                                <img src="{{ asset('storage/' . $item->cover) }}" alt="Books"
-                                                    class="product-item">
-
-                                                @if ($item->stock > 0)
-                                                    <button type="button" class="add-to-cart"
-                                                        onclick="window.location.href='{{ url('/buku/show/' . $item->id_buku) }}'">
-                                                        Lihat detail buku
-                                                    </button>
-                                                @else
-                                                    <button type="button" class="add-to-cart disabled-btn" disabled>
-                                                        Stok Habis
-                                                    </button>
-                                                    <div class="overlay">Habis</div>
-                                                @endif
-                                            </figure>
-
-                                            <figcaption>
-                                                <h3 class="book-title">{{ $item->judul_buku }}</h3>
-                                                <span>{{ $item->penulis }}</span>
-                                                <div class="item-price">
-                                                    Stock {{ $item->stock }}
-                                                </div>
-                                            </figcaption>
-
+                                    <!-- Cover Image -->
+                                    <div class="position-relative overflow-hidden bg-white d-flex align-items-center justify-content-center" style="height: 380px; padding: 1.5rem; border-bottom: 1px solid #f1f1f1;">
+                                        <img src="{{ asset('storage/' . $item->cover) }}" alt="Cover {{ $item->judul_buku }}" class="w-100 h-100 rounded-3 transition-zoom shadow-sm {{ $item->stock == 0 ? 'grayscale-img' : '' }}" style="object-fit: cover;">
+                                        
+                                        <!-- Hover Action -->
+                                        <div class="hover-overlay-action d-flex align-items-center justify-content-center rounded">
+                                            @if ($item->stock > 0)
+                                                <button type="button" class="btn btn-primary rounded-pill fw-bold px-4 py-2 shadow-lg" onclick="window.location.href='{{ url('/buku/show/' . $item->id_buku) }}'">
+                                                    Lihat Detail
+                                                </button>
+                                            @else
+                                                <button type="button" class="btn btn-secondary rounded-pill fw-bold px-4 py-2 disabled" disabled>
+                                                    Tidak Tersedia
+                                                </button>
+                                            @endif
                                         </div>
                                     </div>
-                                @endforeach
 
-
-
-
+                                    <!-- Info Buku -->
+                                    <div class="card-body bg-white text-center d-flex flex-column justify-content-center pt-4 pb-3">
+                                        <div class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-1 mb-2 align-self-center" style="font-size: 0.75rem; text-transform: uppercase; font-weight: 600;">
+                                            {{ $item->kategori }}
+                                        </div>
+                                        <h3 class="h6 fw-bold mb-1 text-dark book-title text-truncate" title="{{ $item->judul_buku }}">{{ $item->judul_buku }}</h3>
+                                        <p class="text-secondary small mb-0">{{ $item->penulis }}</p>
+                                    </div>
+                                    
+                                </div>
                             </div>
-
-
-                        </div>
-
-
-
-
-
-
-
-
-
-
-
+                        @empty
+                            <div class="col-12 text-center py-5">
+                                <i class="icon icon-books text-muted opacity-50 mb-3" style="font-size: 4rem;"></i>
+                                <h5 class="text-secondary">Belum ada koleksi buku yang tersedia.</h5>
+                            </div>
+                        @endforelse
                     </div>
-
-                </div><!--inner-tabs-->
-
+                </div>
             </div>
         </div>
     </section>
@@ -254,55 +262,25 @@
         
         /* Original Product Overlays fixed */
 
-        .search-wrapper {
-            display: flex;
-            justify-content: center;
+        .badge-kategori {
+            background-color: #f1f3f5;
+            color: #495057;
+            font-weight: 600;
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
         }
-
-        .search-box {
-            width: 500px;
+        .badge-kategori:hover {
+            background-color: #e9ecef;
+            color: #212529;
         }
-
-        .search-box input {
-            width: 100%;
-            height: 45px;
-            padding: 0 20px;
-            /* gak perlu space kiri lagi */
-            border-radius: 50px;
-            border: 1px solid #aaa;
-            background-color: #f8f8f8;
-            outline: none;
-            transition: 0.3s;
+        .badge-kategori.active {
+            background-color: #000000 !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
-
-        .search-box input:focus {
-            outline: none;
-        }
-
-        .out-of-stock {
-            position: relative;
-            opacity: 0.6;
-        }
-
-        .out-of-stock img {
+        .grayscale-img {
             filter: grayscale(100%);
-        }
-
-        .disabled-btn {
-            background: #999 !important;
-            cursor: not-allowed;
-        }
-
-        .overlay {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: red;
-            color: white;
-            padding: 5px 10px;
-            font-size: 12px;
-            border-radius: 5px;
-            font-weight: bold;
+            opacity: 0.7;
         }
     </style>
 
