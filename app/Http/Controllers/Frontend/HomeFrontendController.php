@@ -12,7 +12,19 @@ class HomeFrontendController extends Controller
 {
      public function index(){
          $buku = Buku::where('is_active', 1)->get(); // hanya yang aktif
-        return view('page.frontend.home.index', compact('buku'));
+         
+         $popular_books = Buku::where('is_active', 1)
+            ->withCount('peminjaman')
+            ->orderByDesc('peminjaman_count')
+            ->limit(4)
+            ->get();
+
+         $slider_books = Buku::where('is_active', 1)
+            ->orderBy('id_buku', 'desc')
+            ->limit(3)
+            ->get();
+
+        return view('page.frontend.home.index', compact('buku', 'popular_books', 'slider_books'));
     }
  public function show($id)
 {
