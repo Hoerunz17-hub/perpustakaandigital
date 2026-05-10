@@ -33,7 +33,7 @@
                 <div class="col-md-3">
                     <select name="tahun" class="form-control">
                         <option value="">-- Pilih Tahun --</option>
-                        @for ($i = date('Y'); $i >= 2020; $i--)
+                        @for ($i = date('Y') + 2; $i >= 2020; $i--)
                             <option value="{{ $i }}" {{ $tahun == $i ? 'selected' : '' }}>
                                 {{ $i }}
                             </option>
@@ -71,7 +71,7 @@
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table" id="table1">
+                        <table class="table fw-bold" id="table1">
                             <thead>
                                 <tr>
                                     <th class="text-nowrap">No</th>

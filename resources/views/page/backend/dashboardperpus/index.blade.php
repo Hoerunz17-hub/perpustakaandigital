@@ -89,7 +89,7 @@
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table" id="table2">
+                        <table class="table fw-bold" id="table2">
                             <thead>
                                 <tr>
                                     <th class="text-nowrap">No</th>
@@ -136,7 +136,7 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table" id="table1">
+                    <table class="table fw-bold" id="table1">
                         <thead>
                             <tr>
                                 <th class="text-nowrap">Nama</th>
@@ -163,19 +163,23 @@
                                     </td>
 
                                     <td>
-                                        {{ \Carbon\Carbon::parse($item->peminjaman->wajib_kembali)->format('d-m-Y') }}
+                                        {{ \Carbon\Carbon::parse($item->peminjaman->wajib_kembali)->translatedFormat('d F Y') }}
                                     </td>
 
                                     <td>
-                                        {{ $item->tanggal_kembali ? \Carbon\Carbon::parse($item->tanggal_kembali)->format('d-m-Y') : '-' }}
+                                        {{ $item->tanggal_kembali ? \Carbon\Carbon::parse($item->tanggal_kembali)->translatedFormat('d F Y') : '-' }}
                                     </td>
 
                                     <td>
                                         @php
-                                            $telat = \Carbon\Carbon::parse(
+                                            $wajib = \Carbon\Carbon::parse(
                                                 $item->peminjaman->wajib_kembali,
-                                            )->diffInDays(\Carbon\Carbon::parse($item->tanggal_kembali), false);
+                                            )->startOfDay();
+                                            $kembali = \Carbon\Carbon::parse($item->tanggal_kembali)->startOfDay();
+
+                                            $telat = $wajib->diffInDays($kembali, false);
                                         @endphp
+
                                         {{ $telat > 0 ? $telat . ' hari' : '-' }}
                                     </td>
 
